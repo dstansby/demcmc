@@ -10,10 +10,8 @@ name = "demcmc"
 version = "0.0.1"
 dependencies = [
     "astropy",
-    "matplotlib",
     "numpy",
-    "scipy",
-    "sunpy",
+    "plasmapy",
 ]
 
 [project.optional-dependencies]
@@ -23,7 +21,6 @@ docs = [
     "pydata-sphinx-theme",
     "sphinx",
     "sphinx-automodapi",
-    "sphinx-gallery"
 ]
 
 [tool.codespell]
