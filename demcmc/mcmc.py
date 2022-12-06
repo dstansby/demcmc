@@ -8,6 +8,8 @@ from demcmc.dem import BinnedDEM
 from demcmc.emission import EmissionLine
 
 
+__all__ = []
+
 @u.quantity_input
 def _I_pred(line: EmissionLine, n_e: u.cm**-3, dem: BinnedDEM) -> u.Quantity:
     """

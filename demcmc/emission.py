@@ -5,6 +5,7 @@ from plasmapy.particles import Particle
 
 from demcmc.dem import TempBins
 
+__all__ = ['EmissionLine']
 
 @dataclass
 class EmissionLine:

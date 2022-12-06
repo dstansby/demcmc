@@ -132,3 +132,4 @@ dmypy.json
 .DS_Store
 
 doc/_build
+doc/_api
