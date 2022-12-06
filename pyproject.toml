@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+
+
+[project]
+name = "demcmc"
+version = "0.0.1"
+dependencies = [
+    "astropy",
+    "matplotlib",
+    "numpy",
+    "scipy",
+    "sunpy",
+]
+
+[project.optional-dependencies]
+docs = [
+    "myst_parser",
+    "numpydoc",
+    "pydata-sphinx-theme",
+    "sphinx",
+    "sphinx-automodapi",
+    "sphinx-gallery"
+]
+
+[tool.codespell]
+skip = '.git'
