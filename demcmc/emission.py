@@ -1,6 +1,13 @@
+"""
+Units
+-----
+density (n_e) are in units of cm-3
+"""
+
 from dataclasses import dataclass
 
 import astropy.units as u
+import numpy as np
 from plasmapy.particles import Particle
 
 from demcmc.dem import TempBins
@@ -18,7 +25,7 @@ class EmissionLine:
     intensity_obs: float
     sigma_intensity_obs: float
 
-    @u.quantity_input(ne=u.cm**-3, T_lower=u.K, T_upper=u.K)
+    @u.quantity_input(T_lower=u.K, T_upper=u.K)
     def get_contribution_function_single(
         self, n_e: u.Quantity, T_lower: u.Quantity, T_upper: u.Quantity
     ) -> u.Quantity:
@@ -33,7 +40,6 @@ class EmissionLine:
             Temperature interval bounds.
         """
 
-    @u.quantity_input(n_e=u.cm**-3)
     def get_contribution_function_binned(
         self, n_e: u.Quantity, temp_bins: TempBins
     ) -> u.Quantity:
@@ -44,3 +50,21 @@ class EmissionLine:
             self.get_contribution_function_single(n_e, T_lower, T_upper)
             for T_lower, T_upper in temp_bins.iter_bins()
         ]
+
+
+class GaussianLine(EmissionLine):
+    def get_contribution_function_binned(
+        self, n_e: u.Quantity, temp_bins: TempBins
+    ) -> u.Quantity:
+        """
+        Get contribution function across a number of temperature bins.
+        """
+        return (
+            (
+                np.exp(-(((self.center - temp_bins.bin_centers) / self.width) ** 2))
+                * u.cm**5
+                / u.K
+            )
+            / temp_bins.bin_centers.value
+            * 1e6
+        )
