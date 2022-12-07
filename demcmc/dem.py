@@ -17,8 +17,8 @@ class TempBins:
 
     edges: u.Quantity
 
-    @u.quantity_input
-    def __init__(self, edges: u.K):
+    @u.quantity_input(edges=u.K)
+    def __init__(self, edges):
         self.edges = edges
 
     @property
@@ -53,7 +53,7 @@ class BinnedDEM:
     temp_bins: TempBins
     values: u.Quantity
 
-    @u.quantity_input
-    def __init__(self, temp_bins: TempBins, values: u.cm**-5):
+    @u.quantity_input(values=u.cm**-5)
+    def __init__(self, temp_bins: TempBins, values):
         self.temp_bins = temp_bins
         self.values = values

@@ -16,10 +16,8 @@ class EmissionLine:
 
     ion: Particle
 
-    @u.quantity_input
-    def get_contribution_function_single(
-        self, n_e: u.cm**-3, T_lower: u.K, T_upper: u.K
-    ) -> u.Quantity:
+    @u.quantity_input(ne=u.cm**-3, T_lower=u.K, T_upper=u.K)
+    def get_contribution_function_single(self, n_e, T_lower, T_upper) -> u.Quantity:
         """
         Get contribution function, averaged over a given temperature interval.
 
@@ -31,10 +29,8 @@ class EmissionLine:
             Temperature interval bounds.
         """
 
-    @u.quantity_input
-    def get_contribution_function_binned(
-        self, n_e: u.cm**-3, temp_bins: TempBins
-    ) -> u.Quantity:
+    @u.quantity_input(n_e=u.cm**-3)
+    def get_contribution_function_binned(self, n_e, temp_bins: TempBins) -> u.Quantity:
         """
         Get contribution function across a number of temperature bins.
         """
