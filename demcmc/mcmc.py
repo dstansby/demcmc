@@ -26,9 +26,21 @@ def _log_prob_line(
     dem: BinnedDEM,
 ) -> float:
     """
-    Get log probability given line intensity.
+    Get log probability of intensity stored in ``line`` for the given DEM.
     """
     intensity_pred = _I_pred(line, n_e, dem)
     return -float(
         ((line.intensity_obs - intensity_pred) / line.sigma_intensity_obs) ** 2
     )
+
+
+@u.quantity_input(n_e=u.cm**-3)
+def _log_prob_lines(
+    lines: list[EmissionLine],
+    n_e: u.Quantity,
+    dem: BinnedDEM,
+) -> float:
+    """
+    Get log probability of all line intensities stored in ``lines`` for the given DEM.
+    """
+    return np.sum([_log_prob_line(line, n_e, dem) for line in lines])

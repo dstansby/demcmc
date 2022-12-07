@@ -4,7 +4,7 @@ from plasmapy.particles import Particle
 
 from demcmc.dem import BinnedDEM, TempBins
 from demcmc.emission import EmissionLine
-from demcmc.mcmc import _log_prob_line
+from demcmc.mcmc import _log_prob_lines
 
 if __name__ == "__main__":
     # Create temperature bins
@@ -34,5 +34,5 @@ if __name__ == "__main__":
 
     line.get_contribution_function_binned = get_contribution_function_binned
 
-    p = _log_prob_line(line, ne, dem)
+    p = _log_prob_lines([line], ne, dem)
     print(p)
