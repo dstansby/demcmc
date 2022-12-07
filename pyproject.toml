@@ -23,7 +23,8 @@ docs = [
     "sphinx-automodapi",
 ]
 tests = [
-    "pytest"
+    "pytest",
+    "pytest-cov"
 ]
 
 [tool.codespell]
