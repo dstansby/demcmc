@@ -10,7 +10,7 @@ from demcmc.emission import EmissionLine
 __all__ = []
 
 
-@u.quantity_input(n_e=u.cm**-5)
+@u.quantity_input(n_e=u.cm**-3)
 def _I_pred(line: EmissionLine, n_e: u.Quantity, dem: BinnedDEM) -> u.Quantity:
     """
     Calculate predicted intensity of a given line.
@@ -19,17 +19,16 @@ def _I_pred(line: EmissionLine, n_e: u.Quantity, dem: BinnedDEM) -> u.Quantity:
     return np.sum(cont_func * dem.values * dem.temp_bins.bin_widths)
 
 
-@u.quantity_input(n_e=u.cm**-5)
+@u.quantity_input(n_e=u.cm**-3)
 def _log_prob_line(
     line: EmissionLine,
     n_e: u.Quantity,
     dem: BinnedDEM,
-    intensity_obs: u.Quantity,
-    sigma_obs: u.Quantity,
 ) -> float:
     """
     Get log probability given line intensity.
     """
     intensity_pred = _I_pred(line, n_e, dem)
-    print(intensity_pred)
-    return -float(((intensity_obs - intensity_pred) / sigma_obs) ** 2)
+    return -float(
+        ((line.intensity_obs - intensity_pred) / line.sigma_intensity_obs) ** 2
+    )

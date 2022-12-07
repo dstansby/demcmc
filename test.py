@@ -7,13 +7,16 @@ from demcmc.emission import EmissionLine
 from demcmc.mcmc import _log_prob_line
 
 if __name__ == "__main__":
+    # Create temperature bins
     temps = TempBins(np.logspace(5, 8, 31) * u.K)
-    line = EmissionLine(Particle("Fe XII"))
-    ne = 1e8 * u.cm**-3
-    dem = BinnedDEM(temps, 30 * np.ones(len(temps)) * u.cm**-5)
 
+    # Create emission line
     intensity_obs = 7e6
     sigma_obs = intensity_obs / 10
+    line = EmissionLine(Particle("Fe XII"), intensity_obs, sigma_obs)
+
+    ne = 1e8 * u.cm**-3
+    dem = BinnedDEM(temps, 30 * np.ones(len(temps)) * u.cm**-5)
 
     def get_contribution_function_binned(n_e: u.cm**-3, temp_bins: TempBins):
         """
@@ -31,5 +34,5 @@ if __name__ == "__main__":
 
     line.get_contribution_function_binned = get_contribution_function_binned
 
-    p = _log_prob_line(line, ne, dem, intensity_obs, sigma_obs)
+    p = _log_prob_line(line, ne, dem)
     print(p)

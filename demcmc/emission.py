@@ -15,6 +15,8 @@ class EmissionLine:
     """
 
     ion: Particle
+    intensity_obs: float
+    sigma_intensity_obs: float
 
     @u.quantity_input(ne=u.cm**-3, T_lower=u.K, T_upper=u.K)
     def get_contribution_function_single(
