@@ -22,6 +22,9 @@ docs = [
     "sphinx",
     "sphinx-automodapi",
 ]
+tests = [
+    "pytest"
+]
 
 [tool.codespell]
 skip = '.git'
