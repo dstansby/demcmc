@@ -11,7 +11,7 @@ __all__ = []
 
 
 @u.quantity_input(n_e=u.cm**-5)
-def _I_pred(line: EmissionLine, n_e, dem: BinnedDEM) -> u.Quantity:
+def _I_pred(line: EmissionLine, n_e: u.Quantity, dem: BinnedDEM) -> u.Quantity:
     """
     Calculate predicted intensity of a given line.
     """
@@ -22,7 +22,7 @@ def _I_pred(line: EmissionLine, n_e, dem: BinnedDEM) -> u.Quantity:
 @u.quantity_input(n_e=u.cm**-5)
 def _log_prob_line(
     line: EmissionLine,
-    n_e,
+    n_e: u.Quantity,
     dem: BinnedDEM,
     intensity_obs: u.Quantity,
     sigma_obs: u.Quantity,

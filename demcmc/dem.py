@@ -2,6 +2,7 @@
 Structures for working with DEM data.
 """
 from dataclasses import dataclass
+from typing import Iterator, Tuple
 
 import astropy.units as u
 import numpy as np
@@ -18,7 +19,7 @@ class TempBins:
     edges: u.Quantity
 
     @u.quantity_input(edges=u.K)
-    def __init__(self, edges):
+    def __init__(self, edges: u.Quantity):
         self.edges = edges
 
     @property
@@ -28,13 +29,14 @@ class TempBins:
         """
         return np.diff(self.edges)
 
-    def __len__(self):
+    def __len__(self) -> int:
         """
         Number of bins.
         """
-        return self.edges.size - 1
+        # int is just to make mypy happy
+        return int(self.edges.size - 1)
 
-    def iter_bins(self):
+    def iter_bins(self) -> Iterator[Tuple[u.Quantity, u.Quantity]]:
         """
         Iterate through lower/upper bounds of temperature bins.
         """
@@ -54,6 +56,6 @@ class BinnedDEM:
     values: u.Quantity
 
     @u.quantity_input(values=u.cm**-5)
-    def __init__(self, temp_bins: TempBins, values):
+    def __init__(self, temp_bins: TempBins, values: u.Quantity):
         self.temp_bins = temp_bins
         self.values = values
