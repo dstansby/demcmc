@@ -15,20 +15,31 @@ class TempBins:
     A set of temperature bins.
     """
 
-    bin_edges: u.Quantity
+    edges: u.Quantity
+
+    @u.quantity_input
+    def __init__(self, edges: u.K):
+        self.edges = edges
 
     @property
     def bin_widths(self) -> u.Quantity:
         """
         Widths of the bins.
         """
-        return np.diff(self.bin_edges)
+        return np.diff(self.edges)
 
     def __len__(self):
         """
         Number of bins.
         """
-        return self.bin_edges.size - 1
+        return self.edges.size - 1
+
+    def iter_bins(self):
+        """
+        Iterate through lower/upper bounds of temperature bins.
+        """
+        for i in range(len(self)):
+            yield self.edges[i], self.edges[i + 1]
 
 
 @dataclass
@@ -41,3 +52,8 @@ class BinnedDEM:
 
     temp_bins: TempBins
     values: u.Quantity
+
+    @u.quantity_input
+    def __init__(self, temp_bins: TempBins, values: u.cm**-5):
+        self.temp_bins = temp_bins
+        self.values = values

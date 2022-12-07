@@ -5,7 +5,8 @@ from plasmapy.particles import Particle
 
 from demcmc.dem import TempBins
 
-__all__ = ['EmissionLine']
+__all__ = ["EmissionLine"]
+
 
 @dataclass
 class EmissionLine:
@@ -32,8 +33,12 @@ class EmissionLine:
 
     @u.quantity_input
     def get_contribution_function_binned(
-        self, ne: u.cm**-3, temp_bins: TempBins
+        self, n_e: u.cm**-3, temp_bins: TempBins
     ) -> u.Quantity:
         """
         Get contribution function across a number of temperature bins.
         """
+        return [
+            self.get_contribution_function_single(n_e, T_lower, T_upper)
+            for T_lower, T_upper in temp_bins.iter_bins()
+        ]

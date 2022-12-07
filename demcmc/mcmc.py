@@ -7,8 +7,8 @@ import numpy as np
 from demcmc.dem import BinnedDEM
 from demcmc.emission import EmissionLine
 
-
 __all__ = []
+
 
 @u.quantity_input
 def _I_pred(line: EmissionLine, n_e: u.cm**-3, dem: BinnedDEM) -> u.Quantity:
@@ -31,4 +31,5 @@ def _log_prob_line(
     Get log probability given line intensity.
     """
     intensity_pred = _I_pred(line, n_e, dem)
+    print(intensity_pred)
     return -float(((intensity_obs - intensity_pred) / sigma_obs) ** 2)
