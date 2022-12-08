@@ -11,6 +11,7 @@ from astropy.visualization import quantity_support
 
 from demcmc.dem import BinnedDEM, TempBins
 from demcmc.emission import GaussianLine
+from demcmc.mcmc import I_pred
 
 quantity_support()
 
@@ -58,5 +59,21 @@ for line in lines:
     ax.stairs(line.get_contribution_function_binned(temp_bins), temp_bins.edges)
 
 ax.set_title("Line contribution functions")
+
+##################################################################
+# Now lets use this DEM and the line contribution functions to
+# simulate the intensity that each line would observe.
+for line in lines:
+    line.intensity_obs = I_pred(line, dem_in)
+    # Set error to 1/10th of observation
+    line.sigma_intensity_obs = line.intensity_obs / 10
+
+
+centers = u.Quantity([line.center for line in lines])
+intensities = u.Quantity([line.intensity_obs for line in lines])
+
+fig, ax = plt.subplots(constrained_layout=True)
+ax.scatter(centers, intensities)
+ax.set_title("Predicted line intensities")
 
 plt.show()

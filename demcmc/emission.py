@@ -27,7 +27,7 @@ class EmissionLine:
 
     @u.quantity_input(T_lower=u.K, T_upper=u.K)
     def get_contribution_function_single(
-        self, n_e: u.Quantity, T_lower: u.Quantity, T_upper: u.Quantity
+        self, T_lower: u.Quantity, T_upper: u.Quantity
     ) -> u.Quantity:
         """
         Get contribution function, averaged over a given temperature interval.
@@ -45,7 +45,7 @@ class EmissionLine:
         Get contribution function across a number of temperature bins.
         """
         return [
-            self.get_contribution_function_single(n_e, T_lower, T_upper)
+            self.get_contribution_function_single(T_lower, T_upper)
             for T_lower, T_upper in temp_bins.iter_bins()
         ]
 
