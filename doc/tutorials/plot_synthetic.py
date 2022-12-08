@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from astropy.visualization import quantity_support
 
-from demcmc.dem import TempBins
+from demcmc.dem import BinnedDEM, TempBins
 from demcmc.emission import GaussianLine
 
 quantity_support()
@@ -36,4 +36,27 @@ for line in lines:
     ax.stairs(line.get_contribution_function_binned(temp_bins), temp_bins.edges)
 
 ax.set_title("Line contribution functions")
+
+##################################################################
+# Now lets create a 'fake' input DEM. We will use this to simulate line
+# intensities that each of these emission lines would observe.
+#
+# This input DEM is calculated on a coarse temperature grid. This is
+# because it's easier to infer fewer DEM values using the MCMC inversion
+# later.
+coarse_temps = TempBins(np.linspace(1, 2, 11) * u.MK)
+dem_in = np.exp(-(((coarse_temps.bin_centers - 1.2 * u.MK) / (0.2 * u.MK)) ** 2))
+dem_in = BinnedDEM(coarse_temps, dem_in * u.cm**-5)
+
+fig, axs = plt.subplots(nrows=2, sharex=True)
+ax = axs[0]
+ax.stairs(dem_in.values, coarse_temps.edges)
+ax.set_title("Input DEM")
+
+ax = axs[1]
+for line in lines:
+    ax.stairs(line.get_contribution_function_binned(temp_bins), temp_bins.edges)
+
+ax.set_title("Line contribution functions")
+
 plt.show()
