@@ -1,7 +1,5 @@
 """
-Units
------
-density (n_e) are in units of cm-3
+Structures for storing and working with emission lines.
 """
 from dataclasses import dataclass
 from typing import Optional, Sequence
@@ -81,7 +79,7 @@ class GaussianLine(EmissionLine):
 
     _cont_unit = u.cm**5 / u.K
 
-    def __init__(self, center, width):
+    def __init__(self, center: u.Quantity, width: u.Quantity):
         self.width = width
         self.center = center
 

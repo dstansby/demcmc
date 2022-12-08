@@ -1,10 +1,8 @@
 API Reference
 =============
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Contents
+.. automodapi:: demcmc.dem
 
-   dem
-   emission
-   mcmc
+.. automodapi:: demcmc.emission
+
+.. automodapi:: demcmc.mcmc
