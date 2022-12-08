@@ -11,7 +11,7 @@ import numpy as np
 
 from demcmc.dem import BinnedDEM, TempBins
 
-__all__ = ["EmissionLine"]
+__all__ = ["EmissionLine", "GaussianLine", "LineCollection"]
 
 
 @dataclass
