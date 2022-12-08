@@ -3,8 +3,8 @@ Units
 -----
 density (n_e) are in units of cm-3
 """
-
 from dataclasses import dataclass
+from typing import Optional
 
 import astropy.units as u
 import numpy as np
@@ -21,9 +21,9 @@ class EmissionLine:
     A single emission line.
     """
 
-    ion: Particle
-    intensity_obs: float
-    sigma_intensity_obs: float
+    ion: Optional[Particle] = None
+    intensity_obs: Optional[float] = None
+    sigma_intensity_obs: Optional[float] = None
 
     @u.quantity_input(T_lower=u.K, T_upper=u.K)
     def get_contribution_function_single(
@@ -40,9 +40,7 @@ class EmissionLine:
             Temperature interval bounds.
         """
 
-    def get_contribution_function_binned(
-        self, n_e: u.Quantity, temp_bins: TempBins
-    ) -> u.Quantity:
+    def get_contribution_function_binned(self, temp_bins: TempBins) -> u.Quantity:
         """
         Get contribution function across a number of temperature bins.
         """
@@ -53,18 +51,22 @@ class EmissionLine:
 
 
 class GaussianLine(EmissionLine):
-    def get_contribution_function_binned(
-        self, n_e: u.Quantity, temp_bins: TempBins
-    ) -> u.Quantity:
+    width: u.Quantity[u.K]
+    center: u.Quantity[u.K]
+
+    def get_contribution_function_binned(self, temp_bins: TempBins) -> u.Quantity:
         """
         Get contribution function across a number of temperature bins.
         """
         return (
-            (
-                np.exp(-(((self.center - temp_bins.bin_centers) / self.width) ** 2))
-                * u.cm**5
-                / u.K
-            )
-            / temp_bins.bin_centers.value
-            * 1e6
-        )
+            np.exp(-(((self.center - temp_bins.bin_centers) / self.width) ** 2))
+            * u.cm**5
+            / u.K
+        ) * 1e6
+
+
+@dataclass
+class LineCollection:
+    """
+    A collection of several emission lines.
+    """
