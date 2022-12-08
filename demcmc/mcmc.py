@@ -2,6 +2,7 @@
 Functions for carrying out MCMC estimation of DEMs.
 """
 from multiprocessing import Pool
+from typing import Sequence
 
 import astropy.units as u
 import emcee
@@ -10,28 +11,7 @@ import numpy as np
 from demcmc.dem import BinnedDEM, TempBins
 from demcmc.emission import EmissionLine
 
-__all__ = ["I_pred", "predict_dem"]
-
-
-def I_pred(line: EmissionLine, dem: BinnedDEM) -> u.Quantity:
-    """
-    Calculate predicted intensity of a given line.
-
-    Parameters
-    ----------
-    line : EmissionLine
-        Line.
-    dem : BinnedDEM
-        DEM.
-
-    Returns
-    -------
-    astropy.units.Quantity
-        Predicted intensity.
-    """
-    cont_func = line.get_contribution_function_binned(dem.temp_bins)
-    ret = np.sum(cont_func * dem.values * dem.temp_bins.bin_widths)
-    return ret.to_value(u.dimensionless_unscaled)
+__all__ = ["predict_dem"]
 
 
 def _log_prob_line(
@@ -41,7 +21,7 @@ def _log_prob_line(
     """
     Get log probability of intensity stored in ``line`` for the given DEM.
     """
-    intensity_pred = I_pred(line, dem)
+    intensity_pred = line.I_pred(dem)
     # print(line.intensity_obs, intensity_pred)
     ret = -float(
         ((line.intensity_obs - intensity_pred) / line.sigma_intensity_obs) ** 2
@@ -77,7 +57,7 @@ def _log_prob(
 
 
 def predict_dem(
-    lines: list[EmissionLine],
+    lines: Sequence[EmissionLine],
     temp_bins: TempBins,
     nsteps: int = 10,
 ) -> emcee.EnsembleSampler:

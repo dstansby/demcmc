@@ -3,21 +3,19 @@ Units
 -----
 density (n_e) are in units of cm-3
 """
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Sequence
 
 import astropy.units as u
 import numpy as np
-from plasmapy.particles import Particle
 
-from demcmc.dem import TempBins
+from demcmc.dem import BinnedDEM, TempBins
 
 __all__ = ["EmissionLine"]
 
 
 @dataclass
-class EmissionLine(ABC):
+class EmissionLine:
     """
     A single emission line.
 
@@ -32,7 +30,6 @@ class EmissionLine(ABC):
     intensity_obs: Optional[float] = None
     sigma_intensity_obs: Optional[float] = None
 
-    @abstractmethod
     def get_contribution_function_binned(self, temp_bins: TempBins) -> u.Quantity:
         """
         Get contribution function.
@@ -47,6 +44,24 @@ class EmissionLine(ABC):
         contribution_function : astropy.units.Quantity
             Contribution function at given temperature bins.
         """
+
+    def I_pred(self, dem: BinnedDEM) -> u.Quantity:
+        """
+        Calculate predicted intensity of a given line.
+
+        Parameters
+        ----------
+        dem : BinnedDEM
+            DEM.
+
+        Returns
+        -------
+        astropy.units.Quantity
+            Predicted intensity.
+        """
+        cont_func = self.get_contribution_function_binned(dem.temp_bins)
+        ret = np.sum(cont_func * dem.values * dem.temp_bins.bin_widths)
+        return ret.to_value(u.dimensionless_unscaled)
 
 
 class GaussianLine(EmissionLine):
@@ -66,3 +81,5 @@ class LineCollection:
     """
     A collection of several emission lines.
     """
+
+    lines: Sequence[EmissionLine]

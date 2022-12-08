@@ -15,7 +15,7 @@ from astropy.visualization import quantity_support
 
 from demcmc.dem import BinnedDEM, TempBins
 from demcmc.emission import GaussianLine
-from demcmc.mcmc import I_pred, predict_dem
+from demcmc.mcmc import predict_dem
 
 quantity_support()
 
@@ -68,7 +68,7 @@ ax.set_title("Line contribution functions")
 # Now lets use this DEM and the line contribution functions to
 # simulate the intensity that each line would observe.
 for line in lines:
-    line.intensity_obs = I_pred(line, dem_in)
+    line.intensity_obs = line.I_pred(dem_in)
     # Set error to 1/10th of observation
     line.sigma_intensity_obs = line.intensity_obs / 10
 
@@ -87,7 +87,7 @@ ax.set_title("Observed line intensities")
 #   Given the line contribution functions, and the observed
 #   intensity in each line, what was the original DEM?
 if __name__ == "__main__":
-    sampler = predict_dem(lines, dem_in.temp_bins, nsteps=1000)
+    sampler = predict_dem(lines, dem_in.temp_bins, nsteps=100)
     samples = sampler.get_chain()
 
     fig, ax = plt.subplots()
