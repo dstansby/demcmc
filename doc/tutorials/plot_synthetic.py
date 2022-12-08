@@ -86,7 +86,6 @@ ax.set_title("Observed line intensities")
 sampler = predict_dem(lines, dem_in.temp_bins)
 samples = sampler.get_chain()
 
-plt.close("all")
 fig, ax = plt.subplots()
 # Plot last guess for each walker
 for i in range(samples.shape[1]):

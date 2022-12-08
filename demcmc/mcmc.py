@@ -52,7 +52,7 @@ def _log_prob_lines(
     return np.sum(probbs)
 
 
-def predict_dem(lines: list[EmissionLine], temp_bins: TempBins):
+def predict_dem(lines: list[EmissionLine], temp_bins: TempBins, nsteps=10):
     """
     Given a list of emission lines (which each have contribution functions
     and observed intensities), estimate the true DEM in the bins given by
@@ -78,6 +78,5 @@ def predict_dem(lines: list[EmissionLine], temp_bins: TempBins):
     # Create sampler
     sampler = emcee.EnsembleSampler(nwalkers, ndim, log_prob)
     # Run sampler
-    nsteps = 1000
     sampler.run_mcmc(dem_guess, nsteps)
     return sampler
