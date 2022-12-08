@@ -2,6 +2,7 @@
 Structures for working with DEM data.
 """
 from dataclasses import dataclass
+from functools import cached_property
 from typing import Iterator, Tuple
 
 import astropy.units as u
@@ -29,14 +30,14 @@ class TempBins:
     def __init__(self, edges: u.Quantity):
         self.edges = edges
 
-    @property
+    @cached_property
     def bin_widths(self) -> u.Quantity:
         """
         Widths of the bins.
         """
         return np.diff(self.edges)
 
-    @property
+    @cached_property
     def bin_centers(self) -> u.Quantity:
         return (self.edges[:-1] + self.edges[1:]) / 2
 

@@ -4,6 +4,7 @@ Units
 density (n_e) are in units of cm-3
 """
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import Optional, Sequence
 
 import astropy.units as u
@@ -30,6 +31,7 @@ class EmissionLine:
     intensity_obs: Optional[float] = None
     sigma_intensity_obs: Optional[float] = None
 
+    @lru_cache
     def get_contribution_function_binned(self, temp_bins: TempBins) -> u.Quantity:
         """
         Get contribution function.
