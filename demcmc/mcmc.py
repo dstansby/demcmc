@@ -19,6 +19,11 @@ def _log_prob_line(
 ) -> float:
     """
     Get log probability of intensity stored in ``line`` for the given DEM.
+
+    Returns
+    -------
+    float
+        Probability.
     """
     intensity_pred = line.I_pred(dem)
     # print(line.intensity_obs, intensity_pred)
@@ -34,6 +39,11 @@ def _log_prob_lines(
 ) -> float:
     """
     Get log probability of all line intensities stored in ``lines`` for the given DEM.
+
+    Returns
+    -------
+    float
+        Probability.
     """
     probbs = [_log_prob_line(line, dem) for line in lines]
     # print(probbs)
@@ -45,8 +55,13 @@ def _log_prob(
     dem_vals: np.ndarray, temp_bins: TempBins, lines: list[EmissionLine]
 ) -> float:
     """
-    log probability of a given set of (log10(DEM values)).
+    log probability of a given set of DEM values.
     The DEM values are passed as logs to enforce positivity.
+
+    Returns
+    -------
+    float
+        Probability.
     """
     if np.any(dem_vals < 0):
         return float(-np.inf)
@@ -61,9 +76,27 @@ def predict_dem(
     nsteps: int = 10,
 ) -> emcee.EnsembleSampler:
     """
-    Given a list of emission lines (which each have contribution functions
-    and observed intensities), estimate the true DEM in the bins given by
-    temp_bins.
+    Estimate DEM from a number of emission lines.
+
+    Parameters
+    ----------
+    lines : Sequence[EmissionLine]
+        Emission lines.
+    temp_bins : TempBins
+        Temperature bins to predict DEM in.
+    nsteps : int
+        Number of steps for each MCMC walker to take.
+
+    Returns
+    -------
+    emcee.EnsembleSampler
+        Sampler used run the MCMC chains.
+
+    Notes
+    -----
+    - The number of walkers is automatically set to twice the number of
+      temperature bins plus one.
+    - The initial guess for the DEM is uniform across temperature bins.
     """
     ndim = len(temp_bins)
     # Set number of bin walkers to twice dimensionality of the parameter space

@@ -41,7 +41,7 @@ class EmissionLine:
 
         Returns
         -------
-        contribution_function : astropy.units.Quantity
+        astropy.units.Quantity
             Contribution function at given temperature bins.
         """
 
@@ -65,6 +65,17 @@ class EmissionLine:
 
 
 class GaussianLine(EmissionLine):
+    """
+    An emission line with a Gaussian contribution function.
+
+    Parameters
+    ----------
+    center : astropy.units.Quantity
+        Center of contribution function.
+    width : astropy.units.Quantity
+        Width of contribution function.
+    """
+
     center: u.Quantity[u.K]
     width: u.Quantity[u.K]
 
@@ -78,6 +89,19 @@ class GaussianLine(EmissionLine):
         self._center_MK = self.center.to_value(u.MK)
 
     def get_contribution_function_binned(self, temp_bins: TempBins) -> u.Quantity:
+        """
+        Get contribution function.
+
+        Parameters
+        ----------
+        temp_bins : TempBins
+            Temperature bins to get contribution function at.
+
+        Returns
+        -------
+        astropy.units.Quantity
+            Contribution function at given temperature bins.
+        """
         bins = temp_bins.bin_centers.to_value(u.MK)
         return (
             (
@@ -97,6 +121,11 @@ class GaussianLine(EmissionLine):
 class LineCollection:
     """
     A collection of several emission lines.
+
+    Parameters
+    ----------
+    lines : Sequence[EmissionLine]
+        Emission lines.
     """
 
     lines: Sequence[EmissionLine]

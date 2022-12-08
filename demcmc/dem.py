@@ -39,10 +39,16 @@ class TempBins:
 
     @cached_property
     def bin_centers(self) -> u.Quantity:
+        """
+        Centers of the bins.
+        """
         return (self.edges[:-1] + self.edges[1:]) / 2
 
     @cached_property
-    def _bin_centers_MK(self) -> u.Quantity:
+    def _bin_centers_MK(self) -> np.ndarray:
+        """
+        Centers of the bins as bare numbers in units of MK.
+        """
         return self.bin_centers.to_value(u.MK)
 
     def __len__(self) -> int:
@@ -55,6 +61,13 @@ class TempBins:
     def iter_bins(self) -> Iterator[Tuple[u.Quantity, u.Quantity]]:
         """
         Iterate through lower/upper bounds of temperature bins.
+
+        Yields
+        ------
+        lower_edge : astropy.units.Quantity
+            Lower edge of bin.
+        upper_edge : astropy.units.Quantity
+            Upper edge of bin.
         """
         for i in range(len(self)):
             yield self.edges[i], self.edges[i + 1]
