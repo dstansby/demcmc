@@ -17,5 +17,5 @@ class TestTempBins:
         assert len(temp_bins) == 2
 
     def test_wrong_units(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(u.UnitsError):
             TempBins([1, 2] * u.cm)
