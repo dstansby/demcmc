@@ -41,6 +41,10 @@ class TempBins:
     def bin_centers(self) -> u.Quantity:
         return (self.edges[:-1] + self.edges[1:]) / 2
 
+    @cached_property
+    def _bin_centers_MK(self) -> u.Quantity:
+        return self.bin_centers.to_value(u.MK)
+
     def __len__(self) -> int:
         """
         Number of bins.

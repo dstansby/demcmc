@@ -1,7 +1,6 @@
 """
 Functions for carrying out MCMC estimation of DEMs.
 """
-from multiprocessing import Pool
 from typing import Sequence
 
 import astropy.units as u
@@ -72,11 +71,9 @@ def predict_dem(
 
     dem_guess = 0.5 + 0.1 * np.random.rand(nwalkers, ndim)
     # Create sampler
-    with Pool() as pool:
-        sampler = emcee.EnsembleSampler(
-            nwalkers, ndim, _log_prob, args=[temp_bins, lines], pool=pool
-        )
-        # Run sampler
-        sampler.run_mcmc(dem_guess, nsteps, progress=True)
+    # with Pool() as pool:
+    sampler = emcee.EnsembleSampler(nwalkers, ndim, _log_prob, args=[temp_bins, lines])
+    # Run sampler
+    sampler.run_mcmc(dem_guess, nsteps, progress=True)
 
     return sampler

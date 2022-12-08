@@ -29,9 +29,7 @@ line_centers = np.linspace(1, 2, 21) * u.MK
 line_width = 0.1 * u.MK
 
 for line_center in line_centers:
-    line = GaussianLine()
-    line.center = line_center
-    line.width = line_width
+    line = GaussianLine(line_center, line_width)
     lines.append(line)
 
 temp_bins = TempBins(np.linspace(0.5, 2.5, 601) * u.MK)
@@ -87,7 +85,7 @@ ax.set_title("Observed line intensities")
 #   Given the line contribution functions, and the observed
 #   intensity in each line, what was the original DEM?
 if __name__ == "__main__":
-    sampler = predict_dem(lines, dem_in.temp_bins, nsteps=100)
+    sampler = predict_dem(lines, dem_in.temp_bins, nsteps=1000)
     samples = sampler.get_chain()
 
     fig, ax = plt.subplots()

@@ -4,7 +4,6 @@ Units
 density (n_e) are in units of cm-3
 """
 from dataclasses import dataclass
-from functools import lru_cache
 from typing import Optional, Sequence
 
 import astropy.units as u
@@ -31,7 +30,6 @@ class EmissionLine:
     intensity_obs: Optional[float] = None
     sigma_intensity_obs: Optional[float] = None
 
-    @lru_cache
     def get_contribution_function_binned(self, temp_bins: TempBins) -> u.Quantity:
         """
         Get contribution function.
@@ -67,15 +65,32 @@ class EmissionLine:
 
 
 class GaussianLine(EmissionLine):
-    width: u.Quantity[u.K]
     center: u.Quantity[u.K]
+    width: u.Quantity[u.K]
+
+    _cont_unit = u.cm**5 / u.K
+
+    def __init__(self, center, width):
+        self.width = width
+        self.center = center
+
+        self._width_MK = self.width.to_value(u.MK)
+        self._center_MK = self.center.to_value(u.MK)
 
     def get_contribution_function_binned(self, temp_bins: TempBins) -> u.Quantity:
+        bins = temp_bins.bin_centers.to_value(u.MK)
         return (
-            np.exp(-(((self.center - temp_bins.bin_centers) / self.width) ** 2))
-            * u.cm**5
-            / u.K
-        ) * 1e6
+            (
+                np.exp(
+                    -(
+                        ((self._center_MK - temp_bins._bin_centers_MK) / self._width_MK)
+                        ** 2
+                    )
+                )
+            )
+            * 1e6
+            * self._cont_unit
+        )
 
 
 @dataclass
