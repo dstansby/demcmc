@@ -62,12 +62,14 @@ def predict_dem(lines: list[EmissionLine], temp_bins: TempBins):
     # Set number of bin walkers to twice dimensionality of the parameter space
     nwalkers = 2 * ndim + 1
 
-    def log_prob(log_dem_vals):
+    def log_prob(dem_vals):
         """
         log probability of a given set of (log10(DEM values)).
         The DEM values are passed as logs to enforce positivity.
         """
-        dem = BinnedDEM(temp_bins, 10**log_dem_vals * u.cm**-5)
+        if np.any(dem_vals < 0):
+            return -np.inf
+        dem = BinnedDEM(temp_bins, dem_vals * u.cm**-5)
         p = _log_prob_lines(lines, dem)
         print(p)
         return p
@@ -76,6 +78,6 @@ def predict_dem(lines: list[EmissionLine], temp_bins: TempBins):
     # Create sampler
     sampler = emcee.EnsembleSampler(nwalkers, ndim, log_prob)
     # Run sampler
-    nsteps = 20
-    sampler.run_mcmc(np.log10(dem_guess), nsteps)
+    nsteps = 1000
+    sampler.run_mcmc(dem_guess, nsteps)
     return sampler

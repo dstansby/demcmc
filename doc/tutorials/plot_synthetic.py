@@ -45,7 +45,7 @@ ax.set_title("Line contribution functions")
 # This input DEM is calculated on a coarse temperature grid. This is
 # because it's easier to infer fewer DEM values using the MCMC inversion
 # later.
-coarse_temps = TempBins(np.linspace(1, 2, 11) * u.MK)
+coarse_temps = TempBins(np.linspace(1, 2, 6) * u.MK)
 dem_in = np.exp(-(((coarse_temps.bin_centers - 1.2 * u.MK) / (0.2 * u.MK)) ** 2))
 dem_in = BinnedDEM(coarse_temps, dem_in * u.cm**-5)
 
@@ -84,15 +84,22 @@ ax.set_title("Observed line intensities")
 #   intensity in each line, what was the original DEM?
 
 sampler = predict_dem(lines, dem_in.temp_bins)
-samples = sampler.get_chain(flat=True)
+samples = sampler.get_chain()
 
 plt.close("all")
 fig, ax = plt.subplots()
-for i in range(samples.shape[0]):
+# Plot last guess for each walker
+for i in range(samples.shape[1]):
     ax.stairs(
-        10 ** samples[i, :], dem_in.temp_bins.edges, color="k", alpha=0.05, linewidth=1
+        samples[-1, i, :], dem_in.temp_bins.edges, color="k", alpha=0.1, linewidth=1
     )
-ax.stairs(dem_in.values, dem_in.temp_bins.edges, label="Input DEM")
+ax.scatter(dem_in.temp_bins.bin_centers, dem_in.values, label="Input DEM")
 ax.set_yscale("log")
 ax.legend()
+
+fig, ax = plt.subplots()
+ax.plot(-sampler.get_log_prob())
+ax.set_ylabel("-log(probability)")
+ax.set_xlabel("Walker step")
+ax.set_yscale("log")
 plt.show()
