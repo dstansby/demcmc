@@ -3,6 +3,7 @@ Units
 -----
 density (n_e) are in units of cm-3
 """
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Optional
 
@@ -16,38 +17,36 @@ __all__ = ["EmissionLine"]
 
 
 @dataclass
-class EmissionLine:
+class EmissionLine(ABC):
     """
     A single emission line.
+
+    Parameters
+    ----------
+    intensity_obs : float
+        Observed intensity.
+    sigma_intensity_obs : float
+        Uncertainty in observed intensity.
     """
 
-    ion: Optional[Particle] = None
     intensity_obs: Optional[float] = None
     sigma_intensity_obs: Optional[float] = None
 
-    @u.quantity_input(T_lower=u.K, T_upper=u.K)
-    def get_contribution_function_single(
-        self, T_lower: u.Quantity, T_upper: u.Quantity
-    ) -> u.Quantity:
+    @abstractmethod
+    def get_contribution_function_binned(self, temp_bins: TempBins) -> u.Quantity:
         """
-        Get contribution function, averaged over a given temperature interval.
+        Get contribution function.
 
         Parameters
         ----------
-        n_e :
-            Electron density.
-        T_lower, T_upper :
-            Temperature interval bounds.
-        """
+        temp_bins : TempBins
+            Temperature bins to get contribution function at.
 
-    def get_contribution_function_binned(self, temp_bins: TempBins) -> u.Quantity:
+        Returns
+        -------
+        contribution_function : astropy.units.Quantity
+            Contribution function at given temperature bins.
         """
-        Get contribution function across a number of temperature bins.
-        """
-        return [
-            self.get_contribution_function_single(T_lower, T_upper)
-            for T_lower, T_upper in temp_bins.iter_bins()
-        ]
 
 
 class GaussianLine(EmissionLine):
@@ -55,9 +54,6 @@ class GaussianLine(EmissionLine):
     center: u.Quantity[u.K]
 
     def get_contribution_function_binned(self, temp_bins: TempBins) -> u.Quantity:
-        """
-        Get contribution function across a number of temperature bins.
-        """
         return (
             np.exp(-(((self.center - temp_bins.bin_centers) / self.width) ** 2))
             * u.cm**5

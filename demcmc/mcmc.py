@@ -10,12 +10,24 @@ import numpy as np
 from demcmc.dem import BinnedDEM, TempBins
 from demcmc.emission import EmissionLine
 
-__all__ = ["I_pred"]
+__all__ = ["I_pred", "predict_dem"]
 
 
 def I_pred(line: EmissionLine, dem: BinnedDEM) -> u.Quantity:
     """
     Calculate predicted intensity of a given line.
+
+    Parameters
+    ----------
+    line : EmissionLine
+        Line.
+    dem : BinnedDEM
+        DEM.
+
+    Returns
+    -------
+    astropy.units.Quantity
+        Predicted intensity.
     """
     cont_func = line.get_contribution_function_binned(dem.temp_bins)
     ret = np.sum(cont_func * dem.values * dem.temp_bins.bin_widths)

@@ -48,4 +48,5 @@ numpydoc_validation_checks = {
     "all",
     "SA01",  # Allow omitting See Also section
     "EX01",  # Allow omitting Examples section
+    "ES01",  # Allow omitting extended summary section
 }

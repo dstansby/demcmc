@@ -14,6 +14,13 @@ __all__ = ["BinnedDEM", "TempBins"]
 class TempBins:
     """
     A set of temperature bins.
+
+    The bins are defined through the bin edges.
+
+    Parameters
+    ----------
+    edges : astropy.units.Quantity
+        Bin edges.
     """
 
     edges: u.Quantity
@@ -54,6 +61,13 @@ class BinnedDEM:
     A DEM binned over a range of temperature values.
 
     The binning is equal in log-space.
+
+    Parameters
+    ----------
+    temp_bins : TempBins
+        Temperature bins.
+    values : astropy.units.Quantity
+        DEM values.
     """
 
     temp_bins: TempBins
