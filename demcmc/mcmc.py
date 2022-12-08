@@ -10,7 +10,7 @@ import numpy as np
 from demcmc.dem import BinnedDEM, TempBins
 from demcmc.emission import EmissionLine
 
-__all__ = []
+__all__ = ["I_pred"]
 
 
 def I_pred(line: EmissionLine, dem: BinnedDEM) -> u.Quantity:
@@ -47,16 +47,18 @@ def _log_prob_lines(
     probbs = [_log_prob_line(line, dem) for line in lines]
     # print(probbs)
     # print(np.sum(probbs))
-    return np.sum(probbs)
+    return float(np.sum(probbs))
 
 
-def log_prob(dem_vals, temp_bins, lines):
+def _log_prob(
+    dem_vals: np.ndarray, temp_bins: TempBins, lines: list[EmissionLine]
+) -> float:
     """
     log probability of a given set of (log10(DEM values)).
     The DEM values are passed as logs to enforce positivity.
     """
     if np.any(dem_vals < 0):
-        return -np.inf
+        return float(-np.inf)
     dem = BinnedDEM(temp_bins, dem_vals * u.cm**-5)
     p = _log_prob_lines(lines, dem)
     return p
@@ -65,8 +67,8 @@ def log_prob(dem_vals, temp_bins, lines):
 def predict_dem(
     lines: list[EmissionLine],
     temp_bins: TempBins,
-    nsteps=10,
-):
+    nsteps: int = 10,
+) -> emcee.EnsembleSampler:
     """
     Given a list of emission lines (which each have contribution functions
     and observed intensities), estimate the true DEM in the bins given by
@@ -80,7 +82,7 @@ def predict_dem(
     # Create sampler
     with Pool() as pool:
         sampler = emcee.EnsembleSampler(
-            nwalkers, ndim, log_prob, args=[temp_bins, lines], pool=pool
+            nwalkers, ndim, _log_prob, args=[temp_bins, lines], pool=pool
         )
         # Run sampler
         sampler.run_mcmc(dem_guess, nsteps, progress=True)

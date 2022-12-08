@@ -30,7 +30,7 @@ class TempBins:
         return np.diff(self.edges)
 
     @property
-    def bin_centers(self):
+    def bin_centers(self) -> u.Quantity:
         return (self.edges[:-1] + self.edges[1:]) / 2
 
     def __len__(self) -> int:
