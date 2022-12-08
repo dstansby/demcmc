@@ -4,6 +4,10 @@ Calculating a DEM from synthetic data
 This page contains a tutorial, stepping the user through estimating a DEM.
 We don't use any real data here, but instead a series of fake lines that have Gaussian contribution functions.
 """
+import os
+
+os.environ["OMP_NUM_THREADS"] = "1"
+
 import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
@@ -82,23 +86,23 @@ ax.set_title("Observed line intensities")
 #
 #   Given the line contribution functions, and the observed
 #   intensity in each line, what was the original DEM?
+if __name__ == "__main__":
+    sampler = predict_dem(lines, dem_in.temp_bins, nsteps=1000)
+    samples = sampler.get_chain()
 
-sampler = predict_dem(lines, dem_in.temp_bins)
-samples = sampler.get_chain()
+    fig, ax = plt.subplots()
+    # Plot last guess for each walker
+    for i in range(samples.shape[1]):
+        ax.stairs(
+            samples[-1, i, :], dem_in.temp_bins.edges, color="k", alpha=0.1, linewidth=1
+        )
+    ax.scatter(dem_in.temp_bins.bin_centers, dem_in.values, label="Input DEM")
+    ax.set_yscale("log")
+    ax.legend()
 
-fig, ax = plt.subplots()
-# Plot last guess for each walker
-for i in range(samples.shape[1]):
-    ax.stairs(
-        samples[-1, i, :], dem_in.temp_bins.edges, color="k", alpha=0.1, linewidth=1
-    )
-ax.scatter(dem_in.temp_bins.bin_centers, dem_in.values, label="Input DEM")
-ax.set_yscale("log")
-ax.legend()
-
-fig, ax = plt.subplots()
-ax.plot(-sampler.get_log_prob())
-ax.set_ylabel("-log(probability)")
-ax.set_xlabel("Walker step")
-ax.set_yscale("log")
-plt.show()
+    fig, ax = plt.subplots()
+    ax.plot(-sampler.get_log_prob())
+    ax.set_ylabel("-log(probability)")
+    ax.set_xlabel("Walker step")
+    ax.set_yscale("log")
+    plt.show()

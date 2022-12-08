@@ -1,10 +1,8 @@
 """
 Functions for carrying out MCMC estimation of DEMs.
-
-Units
------
-density (n_e) are in units of cm-3
 """
+from multiprocessing import Pool
+
 import astropy.units as u
 import emcee
 import numpy as np
@@ -52,7 +50,23 @@ def _log_prob_lines(
     return np.sum(probbs)
 
 
-def predict_dem(lines: list[EmissionLine], temp_bins: TempBins, nsteps=10):
+def log_prob(dem_vals, temp_bins, lines):
+    """
+    log probability of a given set of (log10(DEM values)).
+    The DEM values are passed as logs to enforce positivity.
+    """
+    if np.any(dem_vals < 0):
+        return -np.inf
+    dem = BinnedDEM(temp_bins, dem_vals * u.cm**-5)
+    p = _log_prob_lines(lines, dem)
+    return p
+
+
+def predict_dem(
+    lines: list[EmissionLine],
+    temp_bins: TempBins,
+    nsteps=10,
+):
     """
     Given a list of emission lines (which each have contribution functions
     and observed intensities), estimate the true DEM in the bins given by
@@ -62,21 +76,13 @@ def predict_dem(lines: list[EmissionLine], temp_bins: TempBins, nsteps=10):
     # Set number of bin walkers to twice dimensionality of the parameter space
     nwalkers = 2 * ndim + 1
 
-    def log_prob(dem_vals):
-        """
-        log probability of a given set of (log10(DEM values)).
-        The DEM values are passed as logs to enforce positivity.
-        """
-        if np.any(dem_vals < 0):
-            return -np.inf
-        dem = BinnedDEM(temp_bins, dem_vals * u.cm**-5)
-        p = _log_prob_lines(lines, dem)
-        print(p)
-        return p
-
     dem_guess = 0.5 + 0.1 * np.random.rand(nwalkers, ndim)
     # Create sampler
-    sampler = emcee.EnsembleSampler(nwalkers, ndim, log_prob)
-    # Run sampler
-    sampler.run_mcmc(dem_guess, nsteps)
+    with Pool() as pool:
+        sampler = emcee.EnsembleSampler(
+            nwalkers, ndim, log_prob, args=[temp_bins, lines], pool=pool
+        )
+        # Run sampler
+        sampler.run_mcmc(dem_guess, nsteps, progress=True)
+
     return sampler
