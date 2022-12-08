@@ -10,7 +10,7 @@ import numpy as np
 from demcmc.dem import BinnedDEM, TempBins
 from demcmc.emission import EmissionLine
 
-__all__ = ["predict_dem"]
+__all__ = ["predict_dem_emcee"]
 
 
 def _log_prob_line(
@@ -70,7 +70,7 @@ def _log_prob(
     return p
 
 
-def predict_dem(
+def predict_dem_emcee(
     lines: Sequence[EmissionLine],
     temp_bins: TempBins,
     nsteps: int = 10,
