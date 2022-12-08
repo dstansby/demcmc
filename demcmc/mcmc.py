@@ -6,9 +6,10 @@ Units
 density (n_e) are in units of cm-3
 """
 import astropy.units as u
+import emcee
 import numpy as np
 
-from demcmc.dem import BinnedDEM
+from demcmc.dem import BinnedDEM, TempBins
 from demcmc.emission import EmissionLine
 
 __all__ = []
@@ -30,7 +31,7 @@ def _log_prob_line(
     """
     Get log probability of intensity stored in ``line`` for the given DEM.
     """
-    intensity_pred = _I_pred(line, dem)
+    intensity_pred = I_pred(line, dem)
     # print(line.intensity_obs, intensity_pred)
     ret = -float(
         ((line.intensity_obs - intensity_pred) / line.sigma_intensity_obs) ** 2
@@ -49,3 +50,32 @@ def _log_prob_lines(
     # print(probbs)
     # print(np.sum(probbs))
     return np.sum(probbs)
+
+
+def predict_dem(lines: list[EmissionLine], temp_bins: TempBins):
+    """
+    Given a list of emission lines (which each have contribution functions
+    and observed intensities), estimate the true DEM in the bins given by
+    temp_bins.
+    """
+    ndim = len(temp_bins)
+    # Set number of bin walkers to twice dimensionality of the parameter space
+    nwalkers = 2 * ndim + 1
+
+    def log_prob(log_dem_vals):
+        """
+        log probability of a given set of (log10(DEM values)).
+        The DEM values are passed as logs to enforce positivity.
+        """
+        dem = BinnedDEM(temp_bins, 10**log_dem_vals * u.cm**-5)
+        p = _log_prob_lines(lines, dem)
+        print(p)
+        return p
+
+    dem_guess = 0.5 + 0.1 * np.random.rand(nwalkers, ndim)
+    # Create sampler
+    sampler = emcee.EnsembleSampler(nwalkers, ndim, log_prob)
+    # Run sampler
+    nsteps = 20
+    sampler.run_mcmc(np.log10(dem_guess), nsteps)
+    return sampler

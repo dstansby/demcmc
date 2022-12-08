@@ -11,7 +11,7 @@ from astropy.visualization import quantity_support
 
 from demcmc.dem import BinnedDEM, TempBins
 from demcmc.emission import GaussianLine
-from demcmc.mcmc import I_pred
+from demcmc.mcmc import I_pred, predict_dem
 
 quantity_support()
 
@@ -74,6 +74,25 @@ intensities = u.Quantity([line.intensity_obs for line in lines])
 
 fig, ax = plt.subplots(constrained_layout=True)
 ax.scatter(centers, intensities)
-ax.set_title("Predicted line intensities")
+ax.set_title("Observed line intensities")
 
+##################################################################
+# Now pretend you didn't see the input DEM above! The problem we
+# want to solve is:
+#
+#   Given the line contribution functions, and the observed
+#   intensity in each line, what was the original DEM?
+
+sampler = predict_dem(lines, dem_in.temp_bins)
+samples = sampler.get_chain(flat=True)
+
+plt.close("all")
+fig, ax = plt.subplots()
+for i in range(samples.shape[0]):
+    ax.stairs(
+        10 ** samples[i, :], dem_in.temp_bins.edges, color="k", alpha=0.05, linewidth=1
+    )
+ax.stairs(dem_in.values, dem_in.temp_bins.edges, label="Input DEM")
+ax.set_yscale("log")
+ax.legend()
 plt.show()
