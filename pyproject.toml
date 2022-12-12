@@ -10,6 +10,7 @@ name = "demcmc"
 version = "0.0.1"
 dependencies = [
     "astropy",
+    "emcee",
     "numpy",
     "plasmapy",
 ]
