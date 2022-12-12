@@ -133,3 +133,5 @@ dmypy.json
 
 doc/_build
 doc/_api
+
+data
