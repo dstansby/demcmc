@@ -23,6 +23,7 @@ docs = [
     "sphinx",
     "sphinx-automodapi",
     "sphinx_gallery",
+    "xarray",
 ]
 tests = [
     "pytest",
