@@ -1,5 +1,5 @@
 """
-Structures for working with DEM data.
+Classes for working with DEM data.
 """
 from dataclasses import dataclass
 from functools import cached_property
