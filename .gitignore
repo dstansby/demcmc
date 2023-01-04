@@ -133,5 +133,6 @@ dmypy.json
 
 doc/_build
 doc/_api
+doc/_auto_examples
 
 data
