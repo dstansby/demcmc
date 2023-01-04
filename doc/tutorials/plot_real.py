@@ -12,21 +12,34 @@ import matplotlib.pyplot as plt
 import xarray as xr
 from astropy.visualization import quantity_support
 
-
 quantity_support()
 
 ##################################################################
 # Load and plot observed intensities
-line_intensities = xr.open_dataarray(
-    Path(__file__).parent / "data" / "sample_intensity_values.nc"
-)
+data_path = Path(__file__).parent / "data"
+line_intensities = xr.open_dataarray(data_path / "sample_intensity_values.nc")
 
 fig, ax = plt.subplots(constrained_layout=True)
-ax.scatter(
-    line_intensities.loc[:, "Intensity"], line_intensities.coords["Line"], marker="x"
+ax.barh(
+    line_intensities.coords["Line"],
+    line_intensities.loc[:, "Intensity"],
 )
 ax.set_xlim(0)
 ax.set_xlabel("Observed intensity")
-ax.yaxis.grid()
 
+##################################################################
+# Load and plot calculated contribution functions
+cont_funcs = xr.open_dataarray(data_path / "sample_cont_func.nc")
+
+fig, ax = plt.subplots()
+for line in cont_funcs.coords["Line"]:
+    ax.plot(
+        cont_funcs.coords["Temperature"], cont_funcs.loc[line, :], label=line.values
+    )
+ax.legend()
+ax.set_xscale("log")
+ax.set_yscale("log")
+ax.set_xlabel("K")
+ax.set_ylabel("cm$^{-3}$")
+ax.set_title("Contribution functions")
 plt.show()
