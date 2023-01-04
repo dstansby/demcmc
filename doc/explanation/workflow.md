@@ -9,8 +9,6 @@ digraph foo {
     "DEM" [shape=box]
     "FIP" [shape=box]
 
-    "Calculate contribution functions"
-
     "Line intensities" -> "Calculate density"
     "Calculate density" -> "Density"
 
