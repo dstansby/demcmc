@@ -7,5 +7,6 @@ A package for estimating differential emission measures (DEMs) from observations
    :maxdepth: 2
 
    tutorials/index
-   explanation/index
+   explanation/dem_theory
    api/index
+   explanation/other_tools
