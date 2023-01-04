@@ -17,6 +17,7 @@ extensions = [
     "matplotlib.sphinxext.plot_directive",
     "myst_parser",
     "numpydoc",
+    "sphinx.ext.graphviz",
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
     "sphinx_automodapi.automodapi",
