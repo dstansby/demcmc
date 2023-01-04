@@ -131,9 +131,9 @@ dmypy.json
 
 .DS_Store
 
-doc/_build
-doc/_api
-doc/_auto_examples
+/doc/_build
+/doc/_api
+/doc/_auto_examples
 
-data
-notebooks
+/data
+/notebooks
