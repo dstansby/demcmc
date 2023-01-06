@@ -41,7 +41,7 @@ class ContFunc(ABC):
         """
 
 
-class ContFuncGaussian:
+class ContFuncGaussian(ContFunc):
     """
     A contribution function with a Gaussian profile.
 
