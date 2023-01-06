@@ -67,9 +67,10 @@ ax.set_title("Line contribution functions")
 # Now lets use this DEM and the line contribution functions to
 # simulate the intensity that each line would observe.
 for line in lines:
-    line.intensity_obs = line.I_pred(dem_in)
+    I_pred = line.I_pred(dem_in)
+    line.intensity_obs = I_pred
     # Set error to 1/10th of observation
-    line.sigma_intensity_obs = line.intensity_obs / 10
+    line.sigma_intensity_obs = I_pred / 10
 
 
 centers = u.Quantity([line.center for line in lines])
