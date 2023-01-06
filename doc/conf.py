@@ -37,7 +37,7 @@ sphinx_gallery_conf = {
     "examples_dirs": "./tutorials",  # path to your example scripts
     "gallery_dirs": "./_auto_examples",  # path to where to save gallery generated output
     "download_all_examples": False,
-    'capture_repr': (),
+    "capture_repr": (),
 }
 
 numpydoc_show_class_members = False
