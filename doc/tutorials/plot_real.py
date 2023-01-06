@@ -41,6 +41,15 @@ ax.legend()
 ax.set_xscale("log")
 ax.set_yscale("log")
 ax.set_xlabel("K")
-ax.set_ylabel("cm$^{-3}$")
+ax.set_ylabel("cm$^{-5}$")
 ax.set_title("Contribution functions")
+
+
+#####
+# Create a collection of lines
+
+"""
+for line_center in line_centers:
+    line = GaussianLine(line_center, line_width)
+    lines.append(line)"""
 plt.show()
