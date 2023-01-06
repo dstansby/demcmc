@@ -10,7 +10,13 @@ import numpy as np
 
 from demcmc.dem import BinnedDEM, TempBins
 
-__all__ = ["ContFunc", "ContFuncGaussian", "ContFuncDiscrete", "EmissionLine", "LineCollection"]
+__all__ = [
+    "ContFunc",
+    "ContFuncGaussian",
+    "ContFuncDiscrete",
+    "EmissionLine",
+    "LineCollection",
+]
 
 
 class ContFunc(ABC):
