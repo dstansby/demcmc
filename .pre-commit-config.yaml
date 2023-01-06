@@ -20,6 +20,7 @@ repos:
         rev: 'v0.971'
         hooks:
         - id: mypy
+          exclude: ^src/demcmc/tests/
           additional_dependencies: [types-setuptools]
 
     -   repo: https://github.com/pre-commit/pre-commit-hooks
