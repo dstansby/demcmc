@@ -4,6 +4,7 @@ Calculating a DEM from real data
 This page contains a tutorial, stepping the user through estimating a DEM.
 In this tutorial we use a single pixel of real data observed by Hinode/EIS.
 """
+import os
 from pathlib import Path
 
 ##################################################################
@@ -16,7 +17,7 @@ quantity_support()
 
 ##################################################################
 # Load and plot observed intensities
-data_path = Path(__file__).parent / "data"
+data_path = Path(os.getcwd()) / "data"
 line_intensities = xr.open_dataarray(data_path / "sample_intensity_values.nc")
 
 fig, ax = plt.subplots(constrained_layout=True)

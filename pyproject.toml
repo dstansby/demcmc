@@ -23,6 +23,8 @@ docs = [
     "sphinx",
     "sphinx-automodapi",
     "sphinx_gallery",
+
+    "netCDF4",
     "xarray",
 ]
 tests = [
