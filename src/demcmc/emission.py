@@ -95,6 +95,13 @@ class ContFuncGaussian(ContFunc):
 class ContFuncDiscrete(ContFunc):
     """
     A pre-computed contribution function defined at temperature values.
+
+    Parameters
+    ----------
+    temps : u.Quantity
+        Temperature values of samples.
+    values : u.Quantity
+        Contribution function values.
     """
 
     def __init__(self, temps: u.Quantity[u.K], values: u.Quantity[u.cm**5 / u.K]):
@@ -110,18 +117,30 @@ class ContFuncDiscrete(ContFunc):
 
     @property
     def temps(self) -> u.Quantity[u.K]:
+        """
+        Temperatures of contribution function samples.
+        """
         return self._temps
 
     @temps.setter
     def temps(self, val: Any) -> None:
+        """
+        Raises an error.
+        """
         raise RuntimeError("ContFuncDiscrete instances are immutable")
 
     @property
     def values(self) -> u.Quantity[u.cm**5 / u.K]:
+        """
+        Contribution function values.
+        """
         return self._values
 
     @values.setter
     def values(self, val: Any) -> None:
+        """
+        Raises an error.
+        """
         raise RuntimeError("ContFuncDiscrete instances are immutable")
 
     def __hash__(self) -> int:
@@ -139,6 +158,19 @@ class ContFuncDiscrete(ContFunc):
 
     @functools.cache
     def binned(self, temp_bins: TempBins) -> u.Quantity[u.cm**5 / u.K]:
+        """
+        Get contribution function.
+
+        Parameters
+        ----------
+        temp_bins : TempBins
+            Temperature bins to get contribution function at.
+
+        Returns
+        -------
+        astropy.units.Quantity
+            Contribution function at given temperature bins.
+        """
         self._check_bin_edges(temp_bins)
 
         df = pd.DataFrame(

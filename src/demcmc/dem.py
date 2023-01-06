@@ -29,10 +29,16 @@ class TempBins:
 
     @property
     def edges(self) -> u.Quantity[u.K]:
+        """
+        Edges of the temperature bins.
+        """
         return self._edges
 
     @edges.setter
     def edges(self, val: Any) -> None:
+        """
+        Raises an error.
+        """
         raise RuntimeError("ContFuncDiscrete instances are immutable")
 
     def __hash__(self) -> int:
