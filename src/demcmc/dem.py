@@ -3,7 +3,7 @@ Classes for working with DEM data.
 """
 from dataclasses import dataclass
 from functools import cached_property
-from typing import Iterator, Tuple
+from typing import Any, Iterator, Tuple
 
 import astropy.units as u
 import numpy as np
@@ -11,7 +11,6 @@ import numpy as np
 __all__ = ["BinnedDEM", "TempBins"]
 
 
-@dataclass
 class TempBins:
     """
     A set of temperature bins.
@@ -24,11 +23,26 @@ class TempBins:
         Bin edges.
     """
 
-    edges: u.Quantity
-
     @u.quantity_input(edges=u.K)
     def __init__(self, edges: u.Quantity):
-        self.edges = edges
+        self._edges = edges
+
+    @property
+    def edges(self) -> u.Quantity[u.K]:
+        """
+        Edges of the temperature bins.
+        """
+        return self._edges
+
+    @edges.setter
+    def edges(self, val: Any) -> None:
+        """
+        Raises an error.
+        """
+        raise RuntimeError("ContFuncDiscrete instances are immutable")
+
+    def __hash__(self) -> int:
+        return id(self)
 
     @cached_property
     def bin_widths(self) -> u.Quantity:
