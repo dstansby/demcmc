@@ -10,7 +10,7 @@ import numpy as np
 
 from demcmc.dem import BinnedDEM, TempBins
 
-__all__ = ["EmissionLine", "GaussianLine", "LineCollection"]
+__all__ = ["ContFunc", "ContFuncGaussian", "ContFuncDiscrete", "EmissionLine", "LineCollection"]
 
 
 class ContFunc(ABC):
@@ -38,6 +38,13 @@ class ContFunc(ABC):
 class ContFuncGaussian:
     """
     A contribution function with a Gaussian profile.
+
+    Parameters
+    ----------
+    center : u.Quantity
+        Center of the Gaussian contribution function.
+    width : u.Quantity
+        Width of the Gaussian contribution function.
     """
 
     def __init__(self, center: u.Quantity, width: u.Quantity):
@@ -79,8 +86,7 @@ class ContFuncGaussian:
 
 class ContFuncDiscrete(ContFunc):
     """
-    A pre-computed contribution function defined at a number of discrete
-    temperature values.
+    A pre-computed contribution function defined at temperature values.
     """
 
 
