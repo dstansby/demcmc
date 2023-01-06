@@ -12,7 +12,7 @@ import numpy as np
 from astropy.visualization import quantity_support
 
 from demcmc.dem import BinnedDEM, TempBins
-from demcmc.emission import GaussianLine
+from demcmc.emission import ContFuncGaussian, EmissionLine
 from demcmc.mcmc import predict_dem_emcee
 
 quantity_support()
@@ -28,15 +28,17 @@ line_centers = np.linspace(1, 2, 21) * u.MK
 line_width = 0.1 * u.MK
 
 for line_center in line_centers:
-    line = GaussianLine(line_center, line_width)
-    lines.append(line)
+    cont_func = ContFuncGaussian(line_center, line_width)
+    lines.append(EmissionLine(cont_func))
 
 # 600 temperature bins, linearly spaced from 0.5 -> 2.5 MK
 temp_bins = TempBins(np.linspace(0.5, 2.5, 601) * u.MK)
 
 fig, ax = plt.subplots()
 for line in lines:
-    ax.stairs(line.get_contribution_function_binned(temp_bins), temp_bins.edges)
+    ax.stairs(
+        line.cont_func.get_contribution_function_binned(temp_bins), temp_bins.edges
+    )
 
 ax.set_title("Line contribution functions")
 
@@ -58,7 +60,9 @@ ax.set_title("Input DEM")
 
 ax = axs[1]
 for line in lines:
-    ax.stairs(line.get_contribution_function_binned(temp_bins), temp_bins.edges)
+    ax.stairs(
+        line.cont_func.get_contribution_function_binned(temp_bins), temp_bins.edges
+    )
 
 ax.set_ylim(bottom=0)
 ax.set_title("Line contribution functions")
@@ -73,7 +77,7 @@ for line in lines:
     line.sigma_intensity_obs = I_pred / 10
 
 
-centers = u.Quantity([line.center for line in lines])
+centers = u.Quantity([line.cont_func.center for line in lines])
 intensities = u.Quantity([line.intensity_obs for line in lines])
 
 fig, ax = plt.subplots(constrained_layout=True)

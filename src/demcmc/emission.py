@@ -1,6 +1,7 @@
 """
 Structures for storing and working with emission lines.
 """
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Optional, Sequence
 
@@ -12,25 +13,15 @@ from demcmc.dem import BinnedDEM, TempBins
 __all__ = ["EmissionLine", "GaussianLine", "LineCollection"]
 
 
-@dataclass
-class EmissionLine:
+class ContFunc(ABC):
     """
-    A single emission line.
-
-    Parameters
-    ----------
-    intensity_obs : float
-        Observed intensity.
-    sigma_intensity_obs : float
-        Uncertainty in observed intensity.
+    A contribution function.
     """
 
-    intensity_obs: Optional[float] = None
-    sigma_intensity_obs: Optional[float] = None
-
+    @abstractmethod
     def get_contribution_function_binned(self, temp_bins: TempBins) -> u.Quantity:
         """
-        Get contribution function.
+        Get contribution function averaged over a number of temperature bins.
 
         Parameters
         ----------
@@ -43,41 +34,11 @@ class EmissionLine:
             Contribution function at given temperature bins.
         """
 
-    def I_pred(self, dem: BinnedDEM) -> u.Quantity:
-        """
-        Calculate predicted intensity of a given line.
 
-        Parameters
-        ----------
-        dem : BinnedDEM
-            DEM.
-
-        Returns
-        -------
-        astropy.units.Quantity
-            Predicted intensity.
-        """
-        cont_func = self.get_contribution_function_binned(dem.temp_bins)
-        ret = np.sum(cont_func * dem.values * dem.temp_bins.bin_widths)
-        return ret.to_value(u.dimensionless_unscaled)
-
-
-class GaussianLine(EmissionLine):
+class ContFuncGaussian:
     """
-    An emission line with a Gaussian contribution function.
-
-    Parameters
-    ----------
-    center : astropy.units.Quantity
-        Center of contribution function.
-    width : astropy.units.Quantity
-        Width of contribution function.
+    A contribution function with a Gaussian profile.
     """
-
-    center: u.Quantity[u.K]
-    width: u.Quantity[u.K]
-
-    _cont_unit = u.cm**5 / u.K
 
     def __init__(self, center: u.Quantity, width: u.Quantity):
         self.width = width
@@ -111,8 +72,54 @@ class GaussianLine(EmissionLine):
                 )
             )
             * 1e6
-            * self._cont_unit
+            * u.cm**5
+            / u.K
         )
+
+
+class ContFuncDiscrete(ContFunc):
+    """
+    A pre-computed contribution function defined at a number of discrete
+    temperature values.
+    """
+
+
+@dataclass
+class EmissionLine:
+    """
+    A single emission line.
+
+    Parameters
+    ----------
+    cont_func : ContFunc
+        Contribution function.
+    intensity_obs : float
+        Observed intensity.
+    sigma_intensity_obs : float
+        Uncertainty in observed intensity.
+    """
+
+    cont_func: ContFunc
+    intensity_obs: Optional[float] = None
+    sigma_intensity_obs: Optional[float] = None
+
+    def I_pred(self, dem: BinnedDEM) -> u.Quantity:
+        """
+        Calculate predicted intensity of a given line.
+
+        Parameters
+        ----------
+        dem : BinnedDEM
+            DEM.
+
+        Returns
+        -------
+        astropy.units.Quantity
+            Predicted intensity.
+        """
+        cont_func = self.cont_func.get_contribution_function_binned(dem.temp_bins)
+        ret = np.sum(cont_func * dem.values * dem.temp_bins.bin_widths)
+        return ret.to_value(u.dimensionless_unscaled)
 
 
 @dataclass
