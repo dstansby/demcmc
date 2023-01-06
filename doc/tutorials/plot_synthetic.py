@@ -36,9 +36,7 @@ temp_bins = TempBins(np.linspace(0.5, 2.5, 601) * u.MK)
 
 fig, ax = plt.subplots()
 for line in lines:
-    ax.stairs(
-        line.cont_func.get_contribution_function_binned(temp_bins), temp_bins.edges
-    )
+    ax.stairs(line.cont_func.binned(temp_bins), temp_bins.edges)
 
 ax.set_title("Line contribution functions")
 
@@ -60,9 +58,7 @@ ax.set_title("Input DEM")
 
 ax = axs[1]
 for line in lines:
-    ax.stairs(
-        line.cont_func.get_contribution_function_binned(temp_bins), temp_bins.edges
-    )
+    ax.stairs(line.cont_func.binned(temp_bins), temp_bins.edges)
 
 ax.set_ylim(bottom=0)
 ax.set_title("Line contribution functions")

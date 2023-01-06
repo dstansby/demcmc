@@ -19,7 +19,7 @@ class ContFunc(ABC):
     """
 
     @abstractmethod
-    def get_contribution_function_binned(self, temp_bins: TempBins) -> u.Quantity:
+    def binned(self, temp_bins: TempBins) -> u.Quantity:
         """
         Get contribution function averaged over a number of temperature bins.
 
@@ -47,7 +47,7 @@ class ContFuncGaussian:
         self._width_MK = self.width.to_value(u.MK)
         self._center_MK = self.center.to_value(u.MK)
 
-    def get_contribution_function_binned(self, temp_bins: TempBins) -> u.Quantity:
+    def binned(self, temp_bins: TempBins) -> u.Quantity:
         """
         Get contribution function.
 
