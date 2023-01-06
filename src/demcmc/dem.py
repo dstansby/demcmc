@@ -23,9 +23,12 @@ class TempBins:
         Bin edges.
     """
 
+    _unit = u.K
+
     @u.quantity_input(edges=u.K)
     def __init__(self, edges: u.Quantity):
         self._edges = edges
+        self._edges_arr = edges.to_value(u.K)
 
     @property
     def edges(self) -> u.Quantity[u.K]:
@@ -50,6 +53,13 @@ class TempBins:
         Widths of the bins.
         """
         return np.diff(self.edges)
+
+    @cached_property
+    def _bin_widths_arr(self) -> np.ndarray:
+        """
+        Widths of the bins as a bare array.
+        """
+        return np.diff(self._edges_arr)
 
     @cached_property
     def bin_centers(self) -> u.Quantity:
@@ -104,8 +114,11 @@ class BinnedDEM:
 
     temp_bins: TempBins
     values: u.Quantity
+    _val_unit = 1 / u.cm**5
 
     @u.quantity_input(values=u.cm**-5)
     def __init__(self, temp_bins: TempBins, values: u.Quantity):
         self.temp_bins = temp_bins
         self.values = values
+
+        self._values_arr = self.values.to_value(self._val_unit)

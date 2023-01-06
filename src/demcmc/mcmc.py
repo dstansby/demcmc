@@ -160,7 +160,6 @@ def predict_dem_emcee(
         )
         # Run sampler
         param_guess = dem_guess[:, i].reshape((nwalkers, 1))
-        nsteps = 100
         sampler.run_mcmc(param_guess, nsteps, progress=True)
 
         samples = sampler.get_chain()
@@ -169,6 +168,6 @@ def predict_dem_emcee(
 
     # Now run MCMC across the ful N-dimensional space to get the final guess
     sampler = emcee.EnsembleSampler(nwalkers, n_dem, _log_prob, args=[temp_bins, lines])
-    sampler.run_mcmc(dem_guess, nsteps * ndim, progress=True)
+    sampler.run_mcmc(dem_guess, nsteps * n_dem, progress=True)
 
     return sampler
