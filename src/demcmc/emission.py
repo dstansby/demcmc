@@ -117,7 +117,7 @@ class EmissionLine:
         astropy.units.Quantity
             Predicted intensity.
         """
-        cont_func = self.cont_func.get_contribution_function_binned(dem.temp_bins)
+        cont_func = self.cont_func.binned(dem.temp_bins)
         ret = np.sum(cont_func * dem.values * dem.temp_bins.bin_widths)
         return ret.to_value(u.dimensionless_unscaled)
 
