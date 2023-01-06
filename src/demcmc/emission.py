@@ -7,6 +7,7 @@ from typing import Optional, Sequence
 
 import astropy.units as u
 import numpy as np
+import pandas as pd
 
 from demcmc.dem import BinnedDEM, TempBins
 
@@ -99,7 +100,7 @@ class ContFuncDiscrete(ContFunc):
     temps: u.Quantity[u.K]
     values: u.Quantity[u.cm**5 / u.K]
 
-    def __init__(self, temps, values):
+    def __init__(self, temps: u.Quantity[u.K], values: u.Quantity[u.cm**5 / u.K]):
         if temps.ndim != 1:
             raise ValueError("temps must be a 1D quantity")
         if values.ndim != 1:
@@ -110,8 +111,31 @@ class ContFuncDiscrete(ContFunc):
         self.temps = temps
         self.values = values
 
-    def binned(self):
-        pass
+    def _check_bin_edges(self, temp_bins: TempBins) -> None:
+        missing_ts = []
+        for t in temp_bins.edges:
+            if t not in self.temps:
+                missing_ts.append(t)
+        if len(missing_ts):
+            raise ValueError(
+                f"The following bin edges in temp_bins are missing from the contribution function temperature coordinates: {missing_ts}"
+            )
+
+    def binned(self, temp_bins: TempBins) -> u.Quantity[u.cm**5 / u.K]:
+        self._check_bin_edges(temp_bins)
+
+        df = pd.DataFrame(
+            {
+                "Temps": self.temps.to_value(u.K),
+                "values": self.values.to_value(u.cm**5 / u.K),
+            }
+        )
+        df = df.set_index("Temps")
+        df["Groups"] = pd.cut(
+            df.index, temp_bins.edges.to_value(u.K), include_lowest=True
+        )
+        means = df.groupby("Groups").mean()
+        return means["values"].values * u.cm**5 / u.K
 
 
 @dataclass
