@@ -4,7 +4,7 @@ Structures for storing and working with emission lines.
 import functools
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional, Sequence
+from typing import Any, Optional, Sequence
 
 import astropy.units as u
 import numpy as np
@@ -92,14 +92,10 @@ class ContFuncGaussian(ContFunc):
         )
 
 
-@dataclass
 class ContFuncDiscrete(ContFunc):
     """
     A pre-computed contribution function defined at temperature values.
     """
-
-    temps: u.Quantity[u.K]
-    values: u.Quantity[u.cm**5 / u.K]
 
     def __init__(self, temps: u.Quantity[u.K], values: u.Quantity[u.cm**5 / u.K]):
         if temps.ndim != 1:
@@ -113,28 +109,28 @@ class ContFuncDiscrete(ContFunc):
         self._values = values
 
     @property
-    def temps(self):
+    def temps(self) -> u.Quantity[u.K]:
         return self._temps
 
     @temps.setter
-    def temps(self, val):
+    def temps(self, val: Any) -> None:
         raise RuntimeError("ContFuncDiscrete instances are immutable")
 
     @property
-    def values(self):
+    def values(self) -> u.Quantity[u.cm**5 / u.K]:
         return self._values
 
     @values.setter
-    def values(self, val):
+    def values(self, val: Any) -> None:
         raise RuntimeError("ContFuncDiscrete instances are immutable")
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return id(self)
 
     def _check_bin_edges(self, temp_bins: TempBins) -> None:
         missing_ts = []
         for t in temp_bins.edges:
-            if t not in self.temps:
+            if not np.any(u.isclose(t, temp_bins.edges, atol=1 * u.K, rtol=0)):
                 missing_ts.append(t)
         if len(missing_ts):
             raise ValueError(

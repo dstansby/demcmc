@@ -71,7 +71,7 @@ for line in line_intensities.coords["Line"].values:
 
 # lines = LineCollection(lines)
 if __name__ == "__main__":
-    temp_bins = TempBins(np.geomspace(1e4, 1e8, 21) * u.K)
+    temp_bins = TempBins(np.geomspace(1e5, 1e8, 16) * u.K)
     # Run DEM inversion
     sampler = predict_dem_emcee(lines, temp_bins, nsteps=1000)
     # Get results
