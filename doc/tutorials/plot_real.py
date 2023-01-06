@@ -12,10 +12,12 @@ from pathlib import Path
 
 import astropy.units as u
 import matplotlib.pyplot as plt
+import numpy as np
 import xarray as xr
 from astropy.visualization import quantity_support
 
-from demcmc.emission import ContFuncDiscrete, EmissionLine
+from demcmc.emission import ContFuncDiscrete, EmissionLine, TempBins
+from demcmc.mcmc import predict_dem_emcee
 
 quantity_support()
 
@@ -51,6 +53,7 @@ ax.set_title("Contribution functions")
 
 #####
 # Create a collection of lines
+lines = []
 for line in line_intensities.coords["Line"].values:
     cont_func = cont_funcs.loc[line, :]
     cont_func = ContFuncDiscrete(
@@ -61,8 +64,29 @@ for line in line_intensities.coords["Line"].values:
     intensity = line_intensities.loc[line, :]
     line = EmissionLine(
         cont_func,
-        intensity_obs=intensity.loc["Intensity"].values[0],
-        sigma_intensity_obs=intensity.loc["Error"].values[0],
+        intensity_obs=intensity.loc["Intensity"].values,
+        sigma_intensity_obs=intensity.loc["Error"].values,
     )
+    lines.append(line)
 
-# plt.show()
+# lines = LineCollection(lines)
+if __name__ == "__main__":
+    temp_bins = TempBins(np.geomspace(1e4, 1e8, 21) * u.K)
+    # Run DEM inversion
+    sampler = predict_dem_emcee(lines, temp_bins, nsteps=1000)
+    # Get results
+    samples = sampler.get_chain()
+
+    fig, ax = plt.subplots()
+    # Plot last guess for each walker
+    for i in range(samples.shape[1]):
+        ax.stairs(samples[-1, i, :], temp_bins.edges, color="k", alpha=0.1, linewidth=1)
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+
+    fig, ax = plt.subplots()
+    ax.plot(-sampler.get_log_prob())
+    ax.set_ylabel("-log(probability)")
+    ax.set_xlabel("Walker step")
+    ax.set_yscale("log")
+    plt.show()

@@ -1,6 +1,7 @@
 """
 Structures for storing and working with emission lines.
 """
+import functools
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Optional, Sequence
@@ -108,8 +109,27 @@ class ContFuncDiscrete(ContFunc):
         if temps.size != values.size:
             raise ValueError("Temperatures and values must be the same size")
 
-        self.temps = temps
-        self.values = values
+        self._temps = temps
+        self._values = values
+
+    @property
+    def temps(self):
+        return self._temps
+
+    @temps.setter
+    def temps(self, val):
+        raise RuntimeError("ContFuncDiscrete instances are immutable")
+
+    @property
+    def values(self):
+        return self._values
+
+    @values.setter
+    def values(self, val):
+        raise RuntimeError("ContFuncDiscrete instances are immutable")
+
+    def __hash__(self):
+        return id(self)
 
     def _check_bin_edges(self, temp_bins: TempBins) -> None:
         missing_ts = []
@@ -121,6 +141,7 @@ class ContFuncDiscrete(ContFunc):
                 f"The following bin edges in temp_bins are missing from the contribution function temperature coordinates: {missing_ts}"
             )
 
+    @functools.cache
     def binned(self, temp_bins: TempBins) -> u.Quantity[u.cm**5 / u.K]:
         self._check_bin_edges(temp_bins)
 
@@ -134,8 +155,8 @@ class ContFuncDiscrete(ContFunc):
         df["Groups"] = pd.cut(
             df.index, temp_bins.edges.to_value(u.K), include_lowest=True
         )
-        means = df.groupby("Groups").mean()
-        return means["values"].values * u.cm**5 / u.K
+        means = df.groupby("Groups").mean()["values"].values
+        return means * u.cm**5 / u.K
 
 
 @dataclass

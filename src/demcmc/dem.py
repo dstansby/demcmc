@@ -28,7 +28,18 @@ class TempBins:
 
     @u.quantity_input(edges=u.K)
     def __init__(self, edges: u.Quantity):
-        self.edges = edges
+        self._edges = edges
+
+    @property
+    def edges(self):
+        return self._edges
+
+    @edges.setter
+    def edges(self, val):
+        raise RuntimeError("ContFuncDiscrete instances are immutable")
+
+    def __hash__(self):
+        return id(self)
 
     @cached_property
     def bin_widths(self) -> u.Quantity:
