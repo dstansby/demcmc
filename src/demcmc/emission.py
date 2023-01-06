@@ -149,7 +149,7 @@ class ContFuncDiscrete(ContFunc):
     def _check_bin_edges(self, temp_bins: TempBins) -> None:
         missing_ts = []
         for t in temp_bins.edges:
-            if not np.any(u.isclose(t, temp_bins.edges, atol=1 * u.K, rtol=0)):
+            if not np.any(u.isclose(t, self._temps, atol=1 * u.K, rtol=0)):
                 missing_ts.append(t)
         if len(missing_ts):
             raise ValueError(
