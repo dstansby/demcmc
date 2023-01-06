@@ -4,14 +4,18 @@ Calculating a DEM from real data
 This page contains a tutorial, stepping the user through estimating a DEM.
 In this tutorial we use a single pixel of real data observed by Hinode/EIS.
 """
-import os
-from pathlib import Path
 
 ##################################################################
 # Start by importing the required modules
+import os
+from pathlib import Path
+
+import astropy.units as u
 import matplotlib.pyplot as plt
 import xarray as xr
 from astropy.visualization import quantity_support
+
+from demcmc.emission import ContFuncDiscrete, EmissionLine
 
 quantity_support()
 
@@ -47,9 +51,18 @@ ax.set_title("Contribution functions")
 
 #####
 # Create a collection of lines
+for line in line_intensities.coords["Line"].values:
+    cont_func = cont_funcs.loc[line, :]
+    cont_func = ContFuncDiscrete(
+        temps=cont_func.coords["Temperature"].values * u.K,
+        values=cont_func.values * u.cm**5 / u.K,
+    )
 
-"""
-for line_center in line_centers:
-    line = GaussianLine(line_center, line_width)
-    lines.append(line)"""
-plt.show()
+    intensity = line_intensities.loc[line, :]
+    line = EmissionLine(
+        cont_func,
+        intensity_obs=intensity.loc["Intensity"].values[0],
+        sigma_intensity_obs=intensity.loc["Error"].values[0],
+    )
+
+# plt.show()

@@ -90,10 +90,28 @@ class ContFuncGaussian(ContFunc):
         )
 
 
+@dataclass
 class ContFuncDiscrete(ContFunc):
     """
     A pre-computed contribution function defined at temperature values.
     """
+
+    temps: u.Quantity[u.K]
+    values: u.Quantity[u.cm**5 / u.K]
+
+    def __init__(self, temps, values):
+        if temps.ndim != 1:
+            raise ValueError("temps must be a 1D quantity")
+        if values.ndim != 1:
+            raise ValueError("values must be a 1D quantity")
+        if temps.size != values.size:
+            raise ValueError("Temperatures and values must be the same size")
+
+        self.temps = temps
+        self.values = values
+
+    def binned(self):
+        pass
 
 
 @dataclass
