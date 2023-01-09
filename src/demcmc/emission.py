@@ -19,7 +19,7 @@ __all__ = [
     "ContFuncGaussian",
     "ContFuncDiscrete",
     "EmissionLine",
-    "LineCollection",
+    "plot_emission_loci",
 ]
 
 
