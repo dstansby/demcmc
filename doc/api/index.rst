@@ -6,3 +6,5 @@ API Reference
 .. automodapi:: demcmc.emission
 
 .. automodapi:: demcmc.mcmc
+
+.. automodapi:: demcmc.io
