@@ -16,16 +16,20 @@ import numpy as np
 import xarray as xr
 from astropy.visualization import quantity_support
 
-from demcmc.emission import ContFuncDiscrete, EmissionLine, TempBins
+from demcmc.emission import EmissionLine, TempBins
+from demcmc.io import load_cont_funcs
 from demcmc.mcmc import predict_dem_emcee
 
 quantity_support()
 
 ##################################################################
-# Load and plot observed intensities
+# Load intensities and contribution functions
 data_path = Path(os.getcwd()) / "data"
 line_intensities = xr.open_dataarray(data_path / "sample_intensity_values.nc")
+cont_funcs = load_cont_funcs(data_path / "sample_cont_func.nc")
 
+##################################################################
+# Plot intensities
 fig, ax = plt.subplots(constrained_layout=True)
 ax.barh(
     line_intensities.coords["Line"],
@@ -35,14 +39,11 @@ ax.set_xlim(0)
 ax.set_xlabel("Observed intensity")
 
 ##################################################################
-# Load and plot calculated contribution functions
-cont_funcs = xr.open_dataarray(data_path / "sample_cont_func.nc")
+# Plot contribution functions
 
 fig, ax = plt.subplots()
-for line in cont_funcs.coords["Line"]:
-    ax.plot(
-        cont_funcs.coords["Temperature"], cont_funcs.loc[line, :], label=line.values
-    )
+for line in cont_funcs.keys():
+    ax.plot(cont_funcs[line].temps, cont_funcs[line].values, label=line)
 ax.legend()
 ax.set_xscale("log")
 ax.set_yscale("log")
@@ -55,11 +56,10 @@ ax.set_title("Contribution functions")
 # Create a collection of lines
 lines = []
 for line in line_intensities.coords["Line"].values:
-    cont_func = cont_funcs.loc[line, :]
-    cont_func = ContFuncDiscrete(
-        temps=cont_func.coords["Temperature"].values * u.K,
-        values=cont_func.values * u.cm**5 / u.K,
-    )
+    if "Fe" not in line:
+        # Only use iron lines
+        continue
+    cont_func = cont_funcs[line]
 
     intensity = line_intensities.loc[line, :]
     line = EmissionLine(
@@ -71,13 +71,20 @@ for line in line_intensities.coords["Line"].values:
 
 # lines = LineCollection(lines)
 if __name__ == "__main__":
-    temp_bins = TempBins(np.geomspace(1e5, 1e7, 21) * u.K)
+    temp_bins = TempBins(10 ** np.arange(5.6, 6.8, 0.1) * u.K)
     # Run DEM inversion
-    sampler = predict_dem_emcee(lines, temp_bins, nsteps=10)
+    sampler = predict_dem_emcee(lines, temp_bins, nsteps=200)
     # Get results
     samples = sampler.get_chain()
 
     fig, ax = plt.subplots()
+    # Plot emission loci
+    for line in lines:
+        tbins = TempBins(np.geomspace(1e5, 1e7, 101) * u.K)
+        cont_func = line.cont_func.binned(tbins)
+        locus = line.intensity_obs / cont_func / tbins.bin_widths
+        ax.stairs(locus, tbins.edges, color="k")
+
     # Plot last guess for each walker
     for i in range(samples.shape[1]):
         ax.stairs(samples[-1, i, :], temp_bins.edges, color="k", alpha=0.1, linewidth=1)
