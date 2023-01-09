@@ -12,7 +12,7 @@ from matplotlib.axes import Axes
 
 from demcmc.units import u_dem, u_temp
 
-__all__ = ["BinnedDEM", "TempBins"]
+__all__ = ["BinnedDEM", "TempBins", "DEMOutput"]
 
 
 class TempBins:

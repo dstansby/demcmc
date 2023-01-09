@@ -143,7 +143,7 @@ def predict_dem_emcee(
     n_dem = len(temp_bins)
     nwalkers = 2 * n_dem + 1
     # Initial DEM value guesses
-    dem_guess = 0.1 * np.random.rand(nwalkers, n_dem)
+    dem_guess = 1e22 * np.random.rand(nwalkers, n_dem)
 
     # Start by running emcee on each of the parameters individually
     #

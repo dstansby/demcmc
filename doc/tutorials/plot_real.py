@@ -16,7 +16,7 @@ import numpy as np
 import xarray as xr
 from astropy.visualization import quantity_support
 
-from demcmc.emission import EmissionLine, TempBins
+from demcmc.emission import EmissionLine, TempBins, plot_emission_loci
 from demcmc.io import load_cont_funcs
 from demcmc.mcmc import predict_dem_emcee
 
@@ -75,11 +75,8 @@ dem_result = predict_dem_emcee(lines, temp_bins, nsteps=10)
 
 fig, ax = plt.subplots()
 # Plot emission loci
-for line in lines:
-    tbins = TempBins(np.geomspace(1e5, 1e7, 101) * u.K)
-    cont_func = line.cont_func.binned(tbins)
-    locus = line.intensity_obs / cont_func / tbins.bin_widths
-    ax.stairs(locus, tbins.edges, color="k")
+plot_emission_loci(lines, ax)
+
 
 # Plot last guess for each walker
 dem_result.plot_final_samples(ax)

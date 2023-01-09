@@ -5,6 +5,8 @@ import xarray as xr
 
 from demcmc.emission import ContFuncDiscrete
 
+__all__ = ["load_cont_funcs"]
+
 
 def load_cont_funcs(path: Path) -> dict[str, ContFuncDiscrete]:
     """

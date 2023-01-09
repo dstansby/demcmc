@@ -2,13 +2,14 @@
 Structures for storing and working with emission lines.
 """
 import functools
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, abstractproperty
 from dataclasses import dataclass
-from typing import Any, Optional, Sequence
+from typing import Any, Optional
 
 import astropy.units as u
 import numpy as np
 import pandas as pd
+from matplotlib.axes import Axes
 
 from demcmc.dem import BinnedDEM, TempBins
 from demcmc.units import u_cont_func
@@ -18,7 +19,7 @@ __all__ = [
     "ContFuncGaussian",
     "ContFuncDiscrete",
     "EmissionLine",
-    "LineCollection",
+    "plot_emission_loci",
 ]
 
 
@@ -59,6 +60,12 @@ class ContFunc(ABC):
         -------
         astropy.units.Quantity
             Contribution function at given temperature bins.
+        """
+
+    @abstractproperty
+    def temps(self) -> TempBins:
+        """
+        Default bins at which to evaluate the contribution function when plotting.
         """
 
 
@@ -107,6 +114,17 @@ class ContFuncGaussian(ContFunc):
             Contribution function at given temperature bins.
         """
         return self._binned_arr(temp_bins) * u_cont_func
+
+    @property
+    def temps(self) -> TempBins:
+        """
+        Temperature bins with 100 samples.
+        """
+        edges = np.linspace(
+            self.center - 3 * self.width, self.center + 3 * self.width, 100
+        )
+        bins: TempBins = TempBins(edges)
+        return bins
 
 
 class ContFuncDiscrete(ContFunc):
@@ -245,15 +263,31 @@ class EmissionLine:
         return np.sum(cont_func * dem._values_arr * dem.temp_bins._bin_widths_arr)
 
 
-@dataclass
-class LineCollection:
+def plot_emission_loci(lines: list[EmissionLine], ax: Axes, **kwargs: Any) -> None:
     """
-    A collection of several emission lines.
+    Plot emission loci.
 
     Parameters
     ----------
-    lines : Sequence[EmissionLine]
-        Emission lines.
-    """
+    lines : list[EmissionLine]
+        Lines to plot.
+    ax : `~matplotlib.axes.Axes`
+        Axes to plot on.
+    kwargs :
+        Keyword arguments are passed to `~matplotlib.axes.Axes.stairs`.
 
-    lines: Sequence[EmissionLine]
+    Notes
+    -----
+    Currently only works with lines that have a `ContFuncDiscrete`
+    contribution function.
+    """
+    kwargs.setdefault("color", "k")
+    # Plot emission loci
+    for line in lines:
+        if not isinstance(line.cont_func, ContFuncDiscrete):
+            continue
+        tbins = TempBins(line.cont_func.temps)
+        cont_func = line.cont_func.binned(tbins)
+        with np.errstate(over="ignore", divide="ignore"):
+            locus = line.intensity_obs / cont_func / tbins.bin_widths
+        ax.stairs(locus, tbins.edges, **kwargs)
