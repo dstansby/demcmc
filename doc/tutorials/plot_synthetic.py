@@ -101,12 +101,10 @@ samples = dem_result.samples
 
 fig, ax = plt.subplots()
 # Plot the last guess from the last step of each walker used in the MCMC run
-for i in range(samples.shape[0]):
-    ax.stairs(
-        samples[i, :], dem_result.temp_bins.edges, color="k", alpha=0.1, linewidth=1
-    )
+dem_result.plot_final_samples(ax)
 # Plot 'true' input DEM
 ax.scatter(dem_in.temp_bins.bin_centers, dem_in.values, label="Input DEM")
+
 ax.set_yscale("log")
 ax.legend()
 
