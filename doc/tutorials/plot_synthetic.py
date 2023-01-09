@@ -92,25 +92,27 @@ ax.set_xlabel("Line contribution function center / MK")
 # do a DEM inversion. This takes the list of lines we created
 # earlier, and the temperature bins that we want to estimate
 # the DEM in.
-if __name__ == "__main__":
-    # Run DEM inversion
-    sampler = predict_dem_emcee(lines, dem_in.temp_bins, nsteps=1000)
-    # Get results
-    samples = sampler.get_chain()
 
-    fig, ax = plt.subplots()
-    # Plot last guess for each walker
-    for i in range(samples.shape[1]):
-        ax.stairs(
-            samples[-1, i, :], dem_in.temp_bins.edges, color="k", alpha=0.1, linewidth=1
-        )
-    ax.scatter(dem_in.temp_bins.bin_centers, dem_in.values, label="Input DEM")
-    ax.set_yscale("log")
-    ax.legend()
+# Run DEM inversion
+dem_result = predict_dem_emcee(lines, dem_in.temp_bins, nsteps=100)
 
-    fig, ax = plt.subplots()
-    ax.plot(-sampler.get_log_prob())
-    ax.set_ylabel("-log(probability)")
-    ax.set_xlabel("Walker step")
-    ax.set_yscale("log")
-    plt.show()
+# Get results
+samples = dem_result.samples
+
+fig, ax = plt.subplots()
+# Plot the last guess from the last step of each walker used in the MCMC run
+for i in range(samples.shape[0]):
+    ax.stairs(
+        samples[i, :], dem_result.temp_bins.edges, color="k", alpha=0.1, linewidth=1
+    )
+# Plot 'true' input DEM
+ax.scatter(dem_in.temp_bins.bin_centers, dem_in.values, label="Input DEM")
+ax.set_yscale("log")
+ax.legend()
+
+fig, ax = plt.subplots()
+ax.plot(-dem_result.sampler.get_log_prob())
+ax.set_ylabel("-log(probability)")
+ax.set_xlabel("Walker step")
+ax.set_yscale("log")
+plt.show()

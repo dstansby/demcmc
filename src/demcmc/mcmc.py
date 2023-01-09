@@ -7,7 +7,7 @@ import astropy.units as u
 import emcee
 import numpy as np
 
-from demcmc.dem import BinnedDEM, TempBins
+from demcmc.dem import BinnedDEM, DEMOutput, TempBins
 from demcmc.emission import EmissionLine
 
 __all__ = ["predict_dem_emcee"]
@@ -169,8 +169,4 @@ def predict_dem_emcee(
     # Now run MCMC across the ful N-dimensional space to get the final guess
     sampler = emcee.EnsembleSampler(nwalkers, n_dem, _log_prob, args=[temp_bins, lines])
     sampler.run_mcmc(dem_guess, nsteps * n_dem, progress=True)
-
-    samples = sampler.get_chain()
-    last_samples = samples[-1, :, :]
-
-    return sampler
+    return DEMOutput(sampler, temp_bins)
