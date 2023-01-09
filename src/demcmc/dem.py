@@ -8,6 +8,8 @@ from typing import Any, Iterator, Tuple
 import astropy.units as u
 import numpy as np
 
+from demcmc.units import u_dem, u_temp
+
 __all__ = ["BinnedDEM", "TempBins"]
 
 
@@ -23,15 +25,13 @@ class TempBins:
         Bin edges.
     """
 
-    _unit = u.K
-
-    @u.quantity_input(edges=u.K)
+    @u.quantity_input(edges=u_temp)
     def __init__(self, edges: u.Quantity):
         self._edges = edges
-        self._edges_arr = edges.to_value(u.K)
+        self._edges_arr = edges.to_value(u_temp)
 
     @property
-    def edges(self) -> u.Quantity[u.K]:
+    def edges(self) -> u.Quantity[u_temp]:
         """
         Edges of the temperature bins.
         """
@@ -102,8 +102,6 @@ class BinnedDEM:
     """
     A DEM binned over a range of temperature values.
 
-    The binning is equal in log-space.
-
     Parameters
     ----------
     temp_bins : TempBins
@@ -114,11 +112,10 @@ class BinnedDEM:
 
     temp_bins: TempBins
     values: u.Quantity
-    _val_unit = 1 / u.cm**5
 
     @u.quantity_input(values=u.cm**-5)
     def __init__(self, temp_bins: TempBins, values: u.Quantity):
         self.temp_bins = temp_bins
         self.values = values
 
-        self._values_arr = self.values.to_value(self._val_unit)
+        self._values_arr = self.values.to_value(u_dem)

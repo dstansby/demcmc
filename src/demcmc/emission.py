@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 
 from demcmc.dem import BinnedDEM, TempBins
+from demcmc.units import u_cont_func
 
 __all__ = [
     "ContFunc",
@@ -73,8 +74,6 @@ class ContFuncGaussian(ContFunc):
         Width of the Gaussian contribution function.
     """
 
-    _units = u.cm**5 / u.K
-
     def __init__(self, center: u.Quantity, width: u.Quantity):
         self.width = width
         self.center = center
@@ -107,7 +106,7 @@ class ContFuncGaussian(ContFunc):
         astropy.units.Quantity
             Contribution function at given temperature bins.
         """
-        return self._binned_arr(temp_bins) * self._units
+        return self._binned_arr(temp_bins) * u_cont_func
 
 
 class ContFuncDiscrete(ContFunc):
