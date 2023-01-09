@@ -42,6 +42,24 @@ class ContFunc(ABC):
             Contribution function at given temperature bins.
         """
 
+    @abstractmethod
+    def _binned_arr(self, temp_bins: TempBins) -> np.ndarray:
+        """
+        Get contribution function averaged over a number of temperature bins.
+
+        Should be returned as a bare array with units of Kelvin.
+
+        Parameters
+        ----------
+        temp_bins : TempBins
+            Temperature bins to get contribution function at.
+
+        Returns
+        -------
+        astropy.units.Quantity
+            Contribution function at given temperature bins.
+        """
+
 
 class ContFuncGaussian(ContFunc):
     """
@@ -55,12 +73,25 @@ class ContFuncGaussian(ContFunc):
         Width of the Gaussian contribution function.
     """
 
+    _units = u.cm**5 / u.K
+
     def __init__(self, center: u.Quantity, width: u.Quantity):
         self.width = width
         self.center = center
 
         self._width_MK = self.width.to_value(u.MK)
         self._center_MK = self.center.to_value(u.MK)
+
+    def _binned_arr(self, temp_bins: TempBins) -> np.ndarray:
+        """
+        Get contribution function without units.
+        """
+        bins = temp_bins.bin_centers.to_value(u.MK)
+        return (
+            np.exp(
+                -(((self._center_MK - temp_bins._bin_centers_MK) / self._width_MK) ** 2)
+            )
+        ) * 1e6
 
     def binned(self, temp_bins: TempBins) -> u.Quantity:
         """
@@ -76,20 +107,7 @@ class ContFuncGaussian(ContFunc):
         astropy.units.Quantity
             Contribution function at given temperature bins.
         """
-        bins = temp_bins.bin_centers.to_value(u.MK)
-        return (
-            (
-                np.exp(
-                    -(
-                        ((self._center_MK - temp_bins._bin_centers_MK) / self._width_MK)
-                        ** 2
-                    )
-                )
-            )
-            * 1e6
-            * u.cm**5
-            / u.K
-        )
+        return self._binned_arr(temp_bins) * self._units
 
 
 class ContFuncDiscrete(ContFunc):
@@ -157,6 +175,23 @@ class ContFuncDiscrete(ContFunc):
             )
 
     @functools.cache
+    def _binned_arr(self, temp_bins: TempBins) -> np.ndarray:
+        self._check_bin_edges(temp_bins)
+
+        df = pd.DataFrame(
+            {
+                "Temps": self.temps.to_value(u.K),
+                "values": self.values.to_value(u.cm**5 / u.K),
+            }
+        )
+        df = df.set_index("Temps")
+        df["Groups"] = pd.cut(
+            df.index, temp_bins.edges.to_value(u.K), include_lowest=True
+        )
+        means = df.groupby("Groups").mean()["values"].values
+        return means
+
+    @functools.cache
     def binned(self, temp_bins: TempBins) -> u.Quantity[u.cm**5 / u.K]:
         """
         Get contribution function.
@@ -171,20 +206,7 @@ class ContFuncDiscrete(ContFunc):
         astropy.units.Quantity
             Contribution function at given temperature bins.
         """
-        self._check_bin_edges(temp_bins)
-
-        df = pd.DataFrame(
-            {
-                "Temps": self.temps.to_value(u.K),
-                "values": self.values.to_value(u.cm**5 / u.K),
-            }
-        )
-        df = df.set_index("Temps")
-        df["Groups"] = pd.cut(
-            df.index, temp_bins.edges.to_value(u.K), include_lowest=True
-        )
-        means = df.groupby("Groups").mean()["values"].values
-        return means * u.cm**5 / u.K
+        return self._binned_arr(temp_bins) * u.cm**5 / u.K
 
 
 @dataclass
@@ -220,9 +242,8 @@ class EmissionLine:
         astropy.units.Quantity
             Predicted intensity.
         """
-        cont_func = self.cont_func.binned(dem.temp_bins)
-        ret = np.sum(cont_func * dem.values * dem.temp_bins.bin_widths)
-        return ret.to_value(u.dimensionless_unscaled)
+        cont_func = self.cont_func._binned_arr(dem.temp_bins)
+        return np.sum(cont_func * dem._values_arr * dem.temp_bins._bin_widths_arr)
 
 
 @dataclass
