@@ -6,6 +6,7 @@ from functools import cached_property
 from typing import Any, Iterator, Tuple
 
 import astropy.units as u
+import emcee
 import numpy as np
 
 from demcmc.units import u_dem, u_temp
@@ -119,3 +120,34 @@ class BinnedDEM:
         self.values = values
 
         self._values_arr = self.values.to_value(u_dem)
+
+
+@dataclass
+class DEMOutput:
+    """
+    Output from running DEM calculation.
+
+    This is not intended to be created by users.
+    """
+
+    def __init__(self, sampler: emcee.EnsembleSampler, temp_bins: TempBins) -> None:
+        self._sampler = sampler
+        self._temp_bins = temp_bins
+
+    @property
+    def sampler(self) -> emcee.EnsembleSampler:
+        return self._sampler
+
+    @property
+    def temp_bins(self) -> TempBins:
+        """
+        Temperature bins.
+        """
+        return self._temp_bins
+
+    @property
+    def samples(self) -> u.Quantity:
+        """
+        Return the last set of samples from the walker.
+        """
+        return self.sampler.get_chain()[-1, :, :] * u_dem
