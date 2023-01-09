@@ -8,6 +8,7 @@ from typing import Any, Iterator, Tuple
 import astropy.units as u
 import emcee
 import numpy as np
+from matplotlib.axes import Axes
 
 from demcmc.units import u_dem, u_temp
 
@@ -151,3 +152,20 @@ class DEMOutput:
         Return the last set of samples from the walker.
         """
         return self.sampler.get_chain()[-1, :, :] * u_dem
+
+    def plot_final_samples(self, ax: Axes, **kwargs: Any) -> None:
+        """
+        Plot the final samples of the MCMC walker.
+
+        Parameters
+        ----------
+        ax : `~matplotlib.axes.Axes`
+            Axes to plot the samples on.
+        kwargs :
+            Any keyword arguments are passed to `~matplotlib.axes.Axes.stairs`.
+        """
+        kwargs.setdefault("color", "k")
+        kwargs.setdefault("alpha", 0.1)
+        kwargs.setdefault("linewidth", 1)
+        for i in range(self.samples.shape[0]):
+            ax.stairs(self.samples[i, :], self.temp_bins.edges, **kwargs)

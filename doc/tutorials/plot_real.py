@@ -82,14 +82,7 @@ for line in lines:
     ax.stairs(locus, tbins.edges, color="k")
 
 # Plot last guess for each walker
-for i in range(dem_result.samples.shape[0]):
-    ax.stairs(
-        dem_result.samples[i, :],
-        dem_result.temp_bins.edges,
-        color="k",
-        alpha=0.1,
-        linewidth=1,
-    )
+dem_result.plot_final_samples(ax)
 ax.set_xscale("log")
 ax.set_yscale("log")
 
