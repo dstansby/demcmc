@@ -11,8 +11,11 @@ version = "0.0.1"
 dependencies = [
     "astropy",
     "emcee",
+    "matplotlib",
+    "netCDF4",
     "numpy",
-    "plasmapy",
+    "pooch",
+    "xarray",
 ]
 
 [project.optional-dependencies]
@@ -23,9 +26,6 @@ docs = [
     "sphinx",
     "sphinx-automodapi",
     "sphinx_gallery",
-
-    "netCDF4",
-    "xarray",
 ]
 tests = [
     "pytest",
