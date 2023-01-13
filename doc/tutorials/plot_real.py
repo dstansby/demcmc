@@ -7,8 +7,6 @@ In this tutorial we use a single pixel of real data observed by Hinode/EIS.
 
 ######################################################################################
 # Start by importing the required modules
-import os
-from pathlib import Path
 
 import astropy.units as u
 import matplotlib.pyplot as plt
@@ -19,18 +17,19 @@ from astropy.visualization import quantity_support
 from demcmc.emission import EmissionLine, TempBins, plot_emission_loci
 from demcmc.io import load_cont_funcs
 from demcmc.mcmc import predict_dem_emcee
+from demcmc.sample_data import fetch_sample_data
 
 quantity_support()
 
 ######################################################################################
-# Now we'll set the path to the data sample data.
-data_path = Path(os.getcwd()) / "data"
+# Load the paths to the sample intensity and contribution function data
+intensity_path, cont_func_path = fetch_sample_data()
 
 ######################################################################################
 # To start with we'll load a set of line intensities. These have been taken from a
 # single pixel of a fitted Hinode/EIS intensity map, and saved into a netCDF file for
 # easy loading.
-line_intensities = xr.open_dataarray(data_path / "sample_intensity_values.nc")
+line_intensities = xr.open_dataarray(intensity_path)
 print(line_intensities)
 
 ######################################################################################
@@ -49,7 +48,7 @@ ax.set_xlabel("Observed intensity")
 # pre-computed and included as sample data. The `demcmc.io.load_cont_funcs` function
 # provides functionality to load these from the saved netCDF file.
 
-cont_funcs = load_cont_funcs(data_path / "sample_cont_func.nc")
+cont_funcs = load_cont_funcs(cont_func_path)
 print(cont_funcs)
 
 ######################################################################################
