@@ -3,11 +3,13 @@ Classes for working with DEM data.
 """
 from dataclasses import dataclass
 from functools import cached_property
+from pathlib import Path
 from typing import Any, Iterator, Tuple
 
 import astropy.units as u
 import emcee
 import numpy as np
+import xarray as xr
 from matplotlib.axes import Axes
 
 from demcmc.units import u_dem, u_temp
@@ -183,3 +185,22 @@ class DEMOutput:
         kwargs.setdefault("linewidth", 1)
         for i in range(self.samples.shape[0]):
             ax.stairs(self.samples[i, :], self.temp_bins.edges, **kwargs)
+
+    def save(self, path: Path) -> None:
+        """
+        Save a computed DEM to a netCDF file.
+
+        Parameters
+        ----------
+        """
+        temp_centers = self.temp_bins.bin_centers
+        temp_edges = self.temp_bins.edges
+
+        samplers = np.arange(self.samples.shape[0])
+        coords = {"Sampler": samplers, "Temp bin center": temp_centers.to_value(u_temp)}
+
+        da = xr.DataArray(
+            data=self.samples,
+            coords=coords,
+            attrs={"Temp bin edges": temp_edges.to_value(u_temp)},
+        )
