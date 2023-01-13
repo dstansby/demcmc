@@ -213,6 +213,20 @@ class DEMOutput:
 
     @classmethod
     def load(cls, path: Path) -> DEMOutput:
+        """
+        Load a computed DEM from a netCDF file.
+
+        This will load files saved by the ``.save()`` method.
+
+        Parameters
+        ----------
+        path : pathlib.Path
+            Path to netCDF file.
+
+        Returns
+        -------
+        DEMOutput
+        """
         da = xr.load_dataarray(path)
         self = cls()
         self._temp_bins = TempBins(da.attrs["Temp bin edges"] * u_temp)
