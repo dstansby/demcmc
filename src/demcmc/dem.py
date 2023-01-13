@@ -148,16 +148,13 @@ class DEMOutput:
 
     Parameters
     ----------
-    sampler : `emcee.EnsembleSampler`, optional
-        Sampler used to generate the DEM. If the output is loaded from a
-        file, this can be `None`.
+    sampler : `emcee.EnsembleSampler`.
+        Sampler used to generate the DEM.
     temp_bins : TempBins
         Temperature bins at which the DEM was calculated.
     """
 
-    def __init__(
-        self, sampler: emcee.EnsembleSampler | None, temp_bins: TempBins
-    ) -> None:
+    def __init__(self, sampler: emcee.EnsembleSampler, temp_bins: TempBins) -> None:
         self._sampler = sampler
         self._temp_bins = temp_bins
 
