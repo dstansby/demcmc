@@ -46,8 +46,6 @@ def _log_prob_lines(
         Probability.
     """
     probbs = [_log_prob_line(line, dem) for line in lines]
-    # print(probbs)
-    # print(np.sum(probbs))
     return float(np.sum(probbs))
 
 
