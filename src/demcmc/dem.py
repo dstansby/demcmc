@@ -148,7 +148,7 @@ class DEMOutput:
 
     Parameters
     ----------
-    sampler : `emcee.EnsembleSampler`.
+    sampler : emcee.EnsembleSampler
         Sampler used to generate the DEM.
     temp_bins : TempBins
         Temperature bins at which the DEM was calculated.
@@ -202,6 +202,8 @@ class DEMOutput:
 
         Parameters
         ----------
+        path : pathlib.Path
+            Path to save to. Should end in ``".nc"``.
         """
         temp_centers = self.temp_bins.bin_centers
         temp_edges = self.temp_bins.edges
