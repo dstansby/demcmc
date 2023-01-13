@@ -3,11 +3,10 @@ Functions for carrying out MCMC estimation of DEMs.
 """
 from typing import Sequence
 
-import astropy.units as u
 import emcee
 import numpy as np
 
-from demcmc.dem import BinnedDEM, DEMOutput, TempBins
+from demcmc.dem import DEMOutput, TempBins
 from demcmc.emission import EmissionLine
 
 __all__ = ["predict_dem_emcee"]
@@ -15,7 +14,8 @@ __all__ = ["predict_dem_emcee"]
 
 def _log_prob_line(
     line: EmissionLine,
-    dem: BinnedDEM,
+    temp_bins: TempBins,
+    dem_guess: np.ndarray,
 ) -> float:
     """
     Get log probability of intensity stored in ``line`` for the given DEM.
@@ -25,8 +25,7 @@ def _log_prob_line(
     float
         Probability.
     """
-    intensity_pred = line.I_pred(dem)
-    # print(line.intensity_obs, intensity_pred)
+    intensity_pred = line._I_pred(temp_bins, dem_guess)
     ret = -float(
         ((line.intensity_obs - intensity_pred) / line.sigma_intensity_obs) ** 2
     )
@@ -35,7 +34,8 @@ def _log_prob_line(
 
 def _log_prob_lines(
     lines: list[EmissionLine],
-    dem: BinnedDEM,
+    temp_bins: TempBins,
+    dem_guess: np.ndarray,
 ) -> float:
     """
     Get log probability of all line intensities stored in ``lines`` for the given DEM.
@@ -45,7 +45,7 @@ def _log_prob_lines(
     float
         Probability.
     """
-    probbs = [_log_prob_line(line, dem) for line in lines]
+    probbs = [_log_prob_line(line, temp_bins, dem_guess) for line in lines]
     return float(np.sum(probbs))
 
 
@@ -102,15 +102,16 @@ def _log_prob(
     if np.any(dem_guess < 0):
         return float(-np.inf)
 
-    dem = BinnedDEM(temp_bins, dem_guess * u.cm**-5)
-    p = _log_prob_lines(lines, dem)
+    p = _log_prob_lines(lines, temp_bins, dem_guess)
     return p
 
 
 def predict_dem_emcee(
     lines: Sequence[EmissionLine],
     temp_bins: TempBins,
+    *,
     nsteps: int = 10,
+    progress: bool = True,
 ) -> DEMOutput:
     """
     Estimate DEM from a number of emission lines.
@@ -126,6 +127,8 @@ def predict_dem_emcee(
         of steps initial parameter guessing takes. The multi-dimensional
         walker then takes ``nsteps * len(temp_bins)`` steps in the final
         part.
+    progress : bool
+        Whether to show a progress bar for the MCMC walking.
 
     Returns
     -------
@@ -158,7 +161,7 @@ def predict_dem_emcee(
         )
         # Run sampler
         param_guess = dem_guess[:, i].reshape((nwalkers, 1))
-        sampler.run_mcmc(param_guess, nsteps=100, progress=True)
+        sampler.run_mcmc(param_guess, nsteps=100, progress=progress)
 
         samples = sampler.get_chain()
         # Take average of last two steps across all samplers
@@ -166,5 +169,5 @@ def predict_dem_emcee(
 
     # Now run MCMC across the ful N-dimensional space to get the final guess
     sampler = emcee.EnsembleSampler(nwalkers, n_dem, _log_prob, args=[temp_bins, lines])
-    sampler.run_mcmc(dem_guess, nsteps * n_dem, progress=True)
+    sampler.run_mcmc(dem_guess, nsteps * n_dem, progress=progress)
     return DEMOutput._from_sampler(sampler, temp_bins)
