@@ -52,3 +52,5 @@ def test_mcmc(lines, tmpdir):
     save_path = tmpdir / "result.nc"
     dem_result.save(save_path)
     assert save_path.exists()
+
+    DEMOutput.load(save_path)

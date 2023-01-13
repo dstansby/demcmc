@@ -212,8 +212,12 @@ class DEMOutput:
         da.to_netcdf(path)
 
     @classmethod
-    def load(cls, path: Path) -> None:
-        pass
+    def load(cls, path: Path) -> DEMOutput:
+        da = xr.load_dataarray(path)
+        self = cls()
+        self._temp_bins = TempBins(da.attrs["Temp bin edges"] * u_temp)
+        self._samples = da.data
+        return self
 
     @classmethod
     def _from_sampler(
