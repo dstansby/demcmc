@@ -35,6 +35,7 @@ class TempBins:
     def __init__(self, edges: u.Quantity):
         self._edges = edges
         self._edges_arr = edges.to_value(u_temp)
+        self._hash = id(self)
 
     @property
     def edges(self) -> u.Quantity[u_temp]:
@@ -65,7 +66,7 @@ class TempBins:
         return self.edges.max()
 
     def __hash__(self) -> int:
-        return id(self)
+        return self._hash
 
     @cached_property
     def bin_widths(self) -> u.Quantity:
@@ -171,6 +172,17 @@ class DEMOutput:
         Return the last set of samples from the walker.
         """
         return self._samples
+
+    @property
+    def n_samples(self) -> int:
+        return int(self.samples.shape[0])
+
+    def iter_binned_dems(self) -> Iterator[BinnedDEM]:
+        """
+        Iterate across each final sample, returning a `BinnedDEM`.
+        """
+        for i in range(self.n_samples):
+            yield BinnedDEM(self.temp_bins, self.samples[i, :])
 
     def plot_final_samples(self, ax: Axes, **kwargs: Any) -> None:
         """
