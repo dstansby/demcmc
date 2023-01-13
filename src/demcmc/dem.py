@@ -46,6 +46,20 @@ class TempBins:
         """
         raise RuntimeError("ContFuncDiscrete instances are immutable")
 
+    @property
+    def min(self) -> u.Quantity[u.K]:
+        """
+        Lower bound of the temperature bins.
+        """
+        return self.edges.min()
+
+    @property
+    def max(self) -> u.Quantity[u.K]:
+        """
+        Upper bound of the temperature bins.
+        """
+        return self.edges.max()
+
     def __hash__(self) -> int:
         return id(self)
 
