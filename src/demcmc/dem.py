@@ -148,19 +148,21 @@ class DEMOutput:
 
     Parameters
     ----------
-    sampler : `emcee.EnsembleSampler`, optional
-        Sampler used to generate the DEM. If the output is loaded from a
-        file, this can be `None`.
+    sampler : emcee.EnsembleSampler
+        Sampler used to generate the DEM.
+    temp_bins : TempBins
+        Temperature bins at which the DEM was calculated.
     """
 
-    def __init__(
-        self, sampler: emcee.EnsembleSampler | None, temp_bins: TempBins
-    ) -> None:
+    def __init__(self, sampler: emcee.EnsembleSampler, temp_bins: TempBins) -> None:
         self._sampler = sampler
         self._temp_bins = temp_bins
 
     @property
     def sampler(self) -> emcee.EnsembleSampler:
+        """
+        Sampler used by emcee to calculated the DEM.
+        """
         return self._sampler
 
     @property
@@ -183,10 +185,10 @@ class DEMOutput:
 
         Parameters
         ----------
-        ax : `~matplotlib.axes.Axes`
+        ax : ~matplotlib.axes.Axes
             Axes to plot the samples on.
-        kwargs :
-            Any keyword arguments are passed to `~matplotlib.axes.Axes.stairs`.
+        **kwargs : dict
+            Keyword arguments are passed to `~matplotlib.axes.Axes.stairs`.
         """
         kwargs.setdefault("color", "k")
         kwargs.setdefault("alpha", 0.1)
@@ -200,6 +202,8 @@ class DEMOutput:
 
         Parameters
         ----------
+        path : pathlib.Path
+            Path to save to. Should end in ``".nc"``.
         """
         temp_centers = self.temp_bins.bin_centers
         temp_edges = self.temp_bins.edges

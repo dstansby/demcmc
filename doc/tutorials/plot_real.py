@@ -1,6 +1,6 @@
 """
-Calculating a DEM from real data
-=====================================
+Tutorial
+========
 This page contains a tutorial, stepping the user through estimating a DEM.
 In this tutorial we use a single pixel of real data observed by Hinode/EIS.
 """

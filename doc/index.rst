@@ -4,10 +4,9 @@ demcmc
 A package for estimating differential emission measures (DEMs) from observations of the Sun using Monte Carlo methods.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   explanation/workflow
-   _auto_examples/index
-   explanation/dem_theory
+   _auto_examples/plot_real
    api/index
+   explanation/dem_theory
    explanation/other_tools

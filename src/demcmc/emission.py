@@ -273,7 +273,7 @@ def plot_emission_loci(lines: list[EmissionLine], ax: Axes, **kwargs: Any) -> No
         Lines to plot.
     ax : `~matplotlib.axes.Axes`
         Axes to plot on.
-    kwargs :
+    **kwargs : dict
         Keyword arguments are passed to `~matplotlib.axes.Axes.stairs`.
 
     Notes
