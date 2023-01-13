@@ -127,6 +127,8 @@ def predict_dem_emcee(
         of steps initial parameter guessing takes. The multi-dimensional
         walker then takes ``nsteps * len(temp_bins)`` steps in the final
         part.
+    progress : bool
+        Whether to show a progress bar for the MCMC walking.
 
     Returns
     -------

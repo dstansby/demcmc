@@ -175,11 +175,18 @@ class DEMOutput:
 
     @property
     def n_samples(self) -> int:
+        """
+        Number of walkers used (same as number of final samples).
+        """
         return int(self.samples.shape[0])
 
     def iter_binned_dems(self) -> Iterator[BinnedDEM]:
         """
         Iterate across each final sample, returning a `BinnedDEM`.
+
+        Yields
+        ------
+        BinnedDEM
         """
         for i in range(self.n_samples):
             yield BinnedDEM(self.temp_bins, self.samples[i, :])
