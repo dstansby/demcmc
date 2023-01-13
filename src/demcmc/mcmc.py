@@ -46,8 +46,6 @@ def _log_prob_lines(
         Probability.
     """
     probbs = [_log_prob_line(line, dem) for line in lines]
-    # print(probbs)
-    # print(np.sum(probbs))
     return float(np.sum(probbs))
 
 
@@ -169,4 +167,4 @@ def predict_dem_emcee(
     # Now run MCMC across the ful N-dimensional space to get the final guess
     sampler = emcee.EnsembleSampler(nwalkers, n_dem, _log_prob, args=[temp_bins, lines])
     sampler.run_mcmc(dem_guess, nsteps * n_dem, progress=True)
-    return DEMOutput(sampler, temp_bins)
+    return DEMOutput._from_sampler(sampler, temp_bins)

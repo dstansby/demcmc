@@ -1,10 +1,12 @@
 """
 Classes for working with DEM data.
 """
+from __future__ import annotations
+
 from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
-from typing import Any, Iterator, Tuple
+from typing import Any, Iterator, Optional, Tuple
 
 import astropy.units as u
 import emcee
@@ -131,32 +133,23 @@ class BinnedDEM:
     temp_bins: TempBins
     values: u.Quantity
 
-    @u.quantity_input(values=u.cm**-5)
-    def __init__(self, temp_bins: TempBins, values: u.Quantity):
+    def __init__(self, temp_bins: TempBins, values: u.Quantity[u.cm**-5]):
         self.temp_bins = temp_bins
         self.values = values
 
         self._values_arr = self.values.to_value(u_dem)
 
 
-@dataclass
 class DEMOutput:
     """
     Output from running DEM calculation.
 
     This is not intended to be created by users.
-
-    Parameters
-    ----------
-    sampler : emcee.EnsembleSampler
-        Sampler used to generate the DEM.
-    temp_bins : TempBins
-        Temperature bins at which the DEM was calculated.
     """
 
-    def __init__(self, sampler: emcee.EnsembleSampler, temp_bins: TempBins) -> None:
-        self._sampler = sampler
-        self._temp_bins = temp_bins
+    _sampler: Optional[emcee.EnsembleSampler]
+    _samples: u.Quantity
+    _temp_bins: TempBins
 
     @property
     def sampler(self) -> emcee.EnsembleSampler:
@@ -177,7 +170,7 @@ class DEMOutput:
         """
         Return the last set of samples from the walker.
         """
-        return self.sampler.get_chain()[-1, :, :] * u_dem
+        return self._samples
 
     def plot_final_samples(self, ax: Axes, **kwargs: Any) -> None:
         """
@@ -217,3 +210,35 @@ class DEMOutput:
             attrs={"Temp bin edges": temp_edges.to_value(u_temp)},
         )
         da.to_netcdf(path)
+
+    @classmethod
+    def load(cls, path: Path) -> DEMOutput:
+        """
+        Load a computed DEM from a netCDF file.
+
+        This will load files saved by the ``.save()`` method.
+
+        Parameters
+        ----------
+        path : pathlib.Path
+            Path to netCDF file.
+
+        Returns
+        -------
+        DEMOutput
+        """
+        da = xr.load_dataarray(path)
+        self = cls()
+        self._temp_bins = TempBins(da.attrs["Temp bin edges"] * u_temp)
+        self._samples = da.data * u_dem
+        return self
+
+    @classmethod
+    def _from_sampler(
+        cls, sampler: emcee.EnsembleSampler, temp_bins: TempBins
+    ) -> DEMOutput:
+        self = cls()
+        self._sampler = sampler
+        self._temp_bins = temp_bins
+        self._samples = self.sampler.get_chain()[-1, :, :] * u_dem
+        return self
