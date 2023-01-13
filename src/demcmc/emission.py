@@ -265,7 +265,7 @@ class EmissionLine:
 
 def plot_emission_loci(lines: list[EmissionLine], ax: Axes, **kwargs: Any) -> None:
     """
-    Plot emission loci.
+    Plot emission loci for a set of observed emission lines.
 
     Parameters
     ----------

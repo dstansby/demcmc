@@ -113,7 +113,7 @@ def predict_dem_emcee(
     lines: Sequence[EmissionLine],
     temp_bins: TempBins,
     nsteps: int = 10,
-) -> emcee.EnsembleSampler:
+) -> DEMOutput:
     """
     Estimate DEM from a number of emission lines.
 
@@ -131,8 +131,8 @@ def predict_dem_emcee(
 
     Returns
     -------
-    emcee.EnsembleSampler
-        Sampler used run the MCMC chains.
+    DEMOutput
+        Output container.
 
     Notes
     -----
