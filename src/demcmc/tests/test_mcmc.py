@@ -49,4 +49,6 @@ def test_mcmc(lines, tmpdir):
     dem_result = predict_dem_emcee(lines, temp_bins, nsteps=1)
     assert isinstance(dem_result, DEMOutput)
 
-    dem_result.save(tmpdir / "result.nc")
+    save_path = tmpdir / "result.nc"
+    dem_result.save(save_path)
+    assert save_path.exists()
