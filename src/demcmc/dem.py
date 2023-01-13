@@ -216,7 +216,7 @@ class DEMOutput:
         da = xr.load_dataarray(path)
         self = cls()
         self._temp_bins = TempBins(da.attrs["Temp bin edges"] * u_temp)
-        self._samples = da.data
+        self._samples = da.data * u_dem
         return self
 
     @classmethod
