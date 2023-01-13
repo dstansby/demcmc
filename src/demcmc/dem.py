@@ -145,9 +145,17 @@ class DEMOutput:
     Output from running DEM calculation.
 
     This is not intended to be created by users.
+
+    Parameters
+    ----------
+    sampler : `emcee.EnsembleSampler`, optional
+        Sampler used to generate the DEM. If the output is loaded from a
+        file, this can be `None`.
     """
 
-    def __init__(self, sampler: emcee.EnsembleSampler, temp_bins: TempBins) -> None:
+    def __init__(
+        self, sampler: emcee.EnsembleSampler | None, temp_bins: TempBins
+    ) -> None:
         self._sampler = sampler
         self._temp_bins = temp_bins
 
@@ -204,3 +212,4 @@ class DEMOutput:
             coords=coords,
             attrs={"Temp bin edges": temp_edges.to_value(u_temp)},
         )
+        da.to_netcdf(path)
