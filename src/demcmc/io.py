@@ -22,7 +22,7 @@ def load_cont_funcs(path: Path) -> dict[str, ContFuncDiscrete]:
 
     Returns
     -------
-    cont_funcs : dict[str, ContFuncDiscrete]
+    dict[str, ContFuncDiscrete]
         Mapping of line name to the loaded contribution function.
     """
     da = xr.open_dataarray(path)

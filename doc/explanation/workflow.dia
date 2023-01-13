@@ -1,6 +1,3 @@
-# Workflow
-
-```{graphviz}
 digraph foo {
     "Temperature bins" [shape=box]
     "Contribution functions" [shape=box]
@@ -26,4 +23,3 @@ digraph foo {
 
     "FIP inversion" -> "FIP"
 }
-```

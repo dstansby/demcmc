@@ -148,9 +148,16 @@ class DEMOutput:
 
     Parameters
     ----------
+<<<<<<< HEAD
     sampler : `emcee.EnsembleSampler`, optional
         Sampler used to generate the DEM. If the output is loaded from a
         file, this can be `None`.
+=======
+    sampler : emcee.EnsembleSampler
+        Sampler used to generate the DEM.
+    temp_bins : TempBins
+        Temperature bins at which the DEM was calculated.
+>>>>>>> daeefbf (Clean up doc warnings)
     """
 
     def __init__(
@@ -161,6 +168,9 @@ class DEMOutput:
 
     @property
     def sampler(self) -> emcee.EnsembleSampler:
+        """
+        Sampler used by emcee to calculated the DEM.
+        """
         return self._sampler
 
     @property
@@ -183,10 +193,10 @@ class DEMOutput:
 
         Parameters
         ----------
-        ax : `~matplotlib.axes.Axes`
+        ax : ~matplotlib.axes.Axes
             Axes to plot the samples on.
-        kwargs :
-            Any keyword arguments are passed to `~matplotlib.axes.Axes.stairs`.
+        **kwargs : dict
+            Keyword arguments are passed to `~matplotlib.axes.Axes.stairs`.
         """
         kwargs.setdefault("color", "k")
         kwargs.setdefault("alpha", 0.1)
