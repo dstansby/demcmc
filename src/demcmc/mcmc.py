@@ -141,33 +141,54 @@ def predict_dem_emcee(
       temperature bins plus one.
     - The initial guess for the DEM is uniform across temperature bins.
     """
-    n_dem = len(temp_bins)
-    nwalkers = 2 * n_dem + 1
     # Initial DEM value guesses
-    dem_guess = 1e22 * np.random.rand(nwalkers, n_dem)
+    n_dem = len(temp_bins)
+    dem_guess = 1e22 * np.ones(n_dem)
 
     # Start by running emcee on each of the parameters individually
     #
     # This speeds up getting started because there instead of searching
     # an N-dimensional space, the search is done on N 1-dimensional
     # spaces.
+    dem_guess, _ = _vary_values_independently(lines, temp_bins, dem_guess, nsteps=100)
+
+    # Now run MCMC across the ful N-dimensional space to get the final guess
+    nwalkers = 2 * n_dem + 1
+    sampler = emcee.EnsembleSampler(nwalkers, n_dem, _log_prob, args=[temp_bins, lines])
+    sampler.run_mcmc(dem_guess, nsteps * n_dem, progress=progress)
+    return DEMOutput._from_sampler(sampler, temp_bins)
+
+
+def _vary_values_independently(
+    lines: Sequence[EmissionLine],
+    temp_bins: TempBins,
+    dem_guess: np.ndarray,
+    *,
+    nsteps: int,
+) -> tuple[np.ndarray, list[emcee.EnsembleSampler]]:
+    ndim = 1
+    nwalkers = 3
+    n_dem = len(temp_bins)
+
+    parameter_guess = np.repeat(np.atleast_2d(dem_guess), nwalkers, axis=0)
+    # Add randomness to initial guesses
+    parameter_guess += np.random.rand(*parameter_guess.shape) * 0.1 * parameter_guess
+
+    samplers = []
     for i in range(n_dem):
-        ndim = 1
         sampler = emcee.EnsembleSampler(
             nwalkers,
             ndim,
             _log_prob_single_variation,
-            args=[i, np.mean(dem_guess, axis=0), temp_bins, lines],
+            args=[i, dem_guess, temp_bins, lines],
         )
         # Run sampler
-        param_guess = dem_guess[:, i].reshape((nwalkers, 1))
-        sampler.run_mcmc(param_guess, nsteps=100, progress=progress)
+        sampler.run_mcmc(parameter_guess[:, i : i + 1], nsteps=nsteps, progress=False)
+        samplers.append(sampler)
 
         samples = sampler.get_chain()
-        # Take average of last two steps across all samplers
-        dem_guess[:, i] = samples[-1, :, 0]
+        # Take mean of the last 10 steps
+        dem_guess[i] = np.mean(samples[-10:, :, :])
+        parameter_guess[:, i] = samples[-1, :, 0]
 
-    # Now run MCMC across the ful N-dimensional space to get the final guess
-    sampler = emcee.EnsembleSampler(nwalkers, n_dem, _log_prob, args=[temp_bins, lines])
-    sampler.run_mcmc(dem_guess, nsteps * n_dem, progress=progress)
-    return DEMOutput._from_sampler(sampler, temp_bins)
+    return dem_guess, samplers
