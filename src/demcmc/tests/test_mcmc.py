@@ -46,7 +46,7 @@ def test_mcmc(lines, tmpdir):
     Smoke test of the MCMC run. Does NOT check values are correct or sensible.
     """
     temp_bins = TempBins(10 ** np.arange(5.6, 6.8, 0.1) * u.K)
-    dem_result = predict_dem_emcee(lines, temp_bins, nsteps=1)
+    dem_result = predict_dem_emcee(lines, temp_bins, nsteps=1, nwalkers=30)
     assert isinstance(dem_result, DEMOutput)
 
     save_path = tmpdir / "result.nc"
