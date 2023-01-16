@@ -154,8 +154,12 @@ def predict_dem_emcee(
 
     # Now run MCMC across the ful N-dimensional space to get the final guess
     nwalkers = 2 * n_dem + 1
+    dem_guess = np.repeat(np.atleast_2d(dem_guess), nwalkers, axis=0)
+    dem_guess += np.random.rand(*dem_guess.shape) * 0.1 * dem_guess
+
     sampler = emcee.EnsembleSampler(nwalkers, n_dem, _log_prob, args=[temp_bins, lines])
-    sampler.run_mcmc(dem_guess, nsteps * n_dem, progress=progress)
+    sampler.run_mcmc(dem_guess, nsteps, progress=progress)
+
     return DEMOutput._from_sampler(sampler, temp_bins)
 
 
