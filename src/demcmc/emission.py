@@ -137,9 +137,17 @@ class ContFuncDiscrete(ContFunc):
         Temperature values of samples.
     values : u.Quantity
         Contribution function values.
+    name : str
+        Name for the contribution function.
     """
 
-    def __init__(self, temps: u.Quantity[u.K], values: u.Quantity[u.cm**5 / u.K]):
+    def __init__(
+        self,
+        temps: u.Quantity[u.K],
+        values: u.Quantity[u.cm**5 / u.K],
+        *,
+        name: Optional[str] = None,
+    ):
         if temps.ndim != 1:
             raise ValueError("temps must be a 1D quantity")
         if values.ndim != 1:
@@ -149,7 +157,17 @@ class ContFuncDiscrete(ContFunc):
 
         self._temps = temps
         self._values = values
+        self._name = name
         self._hash = id(self)
+
+    def __repr__(self) -> str:
+        return f"ContFuncDiscrete(name={self._name}, len(temps)={len(self._temps)})"
+
+    def __str__(self) -> str:
+        if self._name is None:
+            return f"Discrete contribution function sampled at {len(self._temps)} temperatures"
+        else:
+            return f"{self._name} contribution function sampled at {len(self._temps)} temperatures"
 
     @property
     def temps(self) -> u.Quantity[u.K]:
