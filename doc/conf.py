@@ -13,6 +13,8 @@ author = "David Stansby"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
+default_role = 'any'
+
 extensions = [
     "matplotlib.sphinxext.plot_directive",
     "myst_parser",
@@ -48,6 +50,8 @@ automodapi_inheritance_diagram = False
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "astropy": ("https://docs.astropy.org/en/stable/", None),
+    "matplotlib": ("https://matplotlib.org/stable", None),
+    "emcee": ("https://emcee.readthedocs.io/en/stable/", None)
 }
 
 numpydoc_validation_checks = {
