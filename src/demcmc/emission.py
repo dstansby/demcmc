@@ -146,7 +146,7 @@ class ContFuncDiscrete(ContFunc):
         temps: u.Quantity[u.K],
         values: u.Quantity[u.cm**5 / u.K],
         *,
-        name: str | None = None,
+        name: Optional[str] = None,
     ):
         if temps.ndim != 1:
             raise ValueError("temps must be a 1D quantity")
