@@ -95,7 +95,7 @@ for line in line_intensities.coords["Line"].values:
 
 temp_bins = TempBins(10 ** np.arange(5.6, 6.8, 0.1) * u.K)
 # Run DEM inversion
-dem_result = predict_dem_emcee(lines, temp_bins, nsteps=10)
+dem_result = predict_dem_emcee(lines, temp_bins, nwalkers=50, nsteps=100)
 print(dem_result)
 
 ######################################################################################
@@ -118,5 +118,32 @@ ax.set_yscale("log")
 ax.set_xlim(temp_bins.min * 0.9, temp_bins.max * 1.1)
 ax.set_ylim(1e18 * u.cm**-5, 1e26 * u.cm**-5)
 ax.set_title("Emission loci (blue) and DEM estimates (black)")
+
+######################################################################################
+# Finally, we should check if the MCMC walker converged or not.
+chain = dem_result.sampler.get_chain()
+nsamplers = chain.shape[1]
+nparams = chain.shape[2]
+
+fig, axs = plt.subplots(nrows=nparams, sharex=True, figsize=(6, 20))
+
+for ax, param in zip(axs, range(chain.shape[2])):
+    for sampler in range(chain.shape[1]):
+        ax.plot(chain[:, sampler, param], color="tab:blue", alpha=0.1)
+
+    # Plot average of each walker at each step
+    ax.plot(np.mean(chain[:, :, param], axis=1), color="k")
+
+    ax.set_yscale("log")
+    ax.margins(x=0)
+    ax.xaxis.grid()
+
+fig.subplots_adjust(hspace=0)
+axs[0].set_title("Parameter estimates as a function of MCMC step")
+
+######################################################################################
+# There are still large scale variations going on for each parameter, so clearly the
+# MCMC run has not converged. When running ``demcmc`` yourself make sure to set an
+# appropriate number of walkers and steps so the parameter estimates converge!
 
 plt.show()

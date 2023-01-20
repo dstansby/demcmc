@@ -110,7 +110,8 @@ def predict_dem_emcee(
     lines: Sequence[EmissionLine],
     temp_bins: TempBins,
     *,
-    nsteps: int = 10,
+    nsteps: int,
+    nwalkers: int,
     progress: bool = True,
 ) -> DEMOutput:
     """
@@ -123,10 +124,9 @@ def predict_dem_emcee(
     temp_bins : TempBins
         Temperature bins to predict DEM in.
     nsteps : int
-        Number of steps for each MCMC walker to take. This is the number
-        of steps initial parameter guessing takes. The multi-dimensional
-        walker then takes ``nsteps * len(temp_bins)`` steps in the final
-        part.
+        Total number of steps for the MCMC walkers to take.
+    nwalkers : int
+        Number of MCMC walkers to use.
     progress : bool
         Whether to show a progress bar for the MCMC walking.
 
@@ -134,12 +134,6 @@ def predict_dem_emcee(
     -------
     DEMOutput
         Output container.
-
-    Notes
-    -----
-    - The number of walkers is automatically set to twice the number of
-      temperature bins plus one.
-    - The initial guess for the DEM is uniform across temperature bins.
     """
     # Initial DEM value guesses
     n_dem = len(temp_bins)
@@ -153,9 +147,8 @@ def predict_dem_emcee(
     dem_guess, _ = _vary_values_independently(lines, temp_bins, dem_guess, nsteps=100)
 
     # Now run MCMC across the ful N-dimensional space to get the final guess
-    nwalkers = 2 * n_dem + 1
     dem_guess = np.repeat(np.atleast_2d(dem_guess), nwalkers, axis=0)
-    dem_guess += np.random.rand(*dem_guess.shape) * 0.1 * dem_guess
+    dem_guess += np.random.rand(*dem_guess.shape) * 0.01 * dem_guess
 
     sampler = emcee.EnsembleSampler(nwalkers, n_dem, _log_prob, args=[temp_bins, lines])
     sampler.run_mcmc(dem_guess, nsteps, progress=progress)
@@ -176,7 +169,7 @@ def _vary_values_independently(
 
     parameter_guess = np.repeat(np.atleast_2d(dem_guess), nwalkers, axis=0)
     # Add randomness to initial guesses
-    parameter_guess += np.random.rand(*parameter_guess.shape) * 0.1 * parameter_guess
+    parameter_guess += np.random.rand(*parameter_guess.shape) * 0.01 * parameter_guess
 
     samplers = []
     for i in range(n_dem):

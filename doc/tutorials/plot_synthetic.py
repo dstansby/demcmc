@@ -94,7 +94,7 @@ ax.set_xlabel("Line contribution function center / MK")
 # the DEM in.
 
 # Run DEM inversion
-dem_result = predict_dem_emcee(lines, dem_in.temp_bins, nsteps=100)
+dem_result = predict_dem_emcee(lines, dem_in.temp_bins, nwalkers=20, nsteps=100)
 
 # Get results
 samples = dem_result.samples
