@@ -14,9 +14,13 @@ import numpy as np
 import xarray as xr
 from astropy.visualization import quantity_support
 
-from demcmc.emission import EmissionLine, TempBins, plot_emission_loci
-from demcmc.io import load_cont_funcs
-from demcmc.mcmc import predict_dem_emcee
+from demcmc import (
+    EmissionLine,
+    TempBins,
+    load_cont_funcs,
+    plot_emission_loci,
+    predict_dem_emcee,
+)
 from demcmc.sample_data import fetch_sample_data
 
 quantity_support()
@@ -45,14 +49,14 @@ ax.set_xlabel("Observed intensity")
 ######################################################################################
 # As well as observed intensities, the second ingredient we need for estimating a DEM
 # is the theoretical contribution functions for each observed line. These have been
-# pre-computed and included as sample data. The `demcmc.io.load_cont_funcs` function
+# pre-computed and included as sample data. The `load_cont_funcs` function
 # provides functionality to load these from the saved netCDF file.
 
 cont_funcs = load_cont_funcs(cont_func_path)
 print(cont_funcs)
 
 ######################################################################################
-# `cont_funcs` is a dictionary that maps the emission line to a contribution function
+# ``cont_funcs``` is a dictionary that maps the emission line to a contribution function
 # object. This object stores a pre-computed contribution function at a range of
 # discrete temperature values. Lets do a visualisation of all the contribution
 # functions:
@@ -90,7 +94,7 @@ for line in line_intensities.coords["Line"].values:
 # Now we can run the DEM inversion! We have to decide what temperature bins we want
 # to estimate the DEM in. For this example we'll use 12 bins, with a width of 0.1 MK.
 #
-# ``demcmc`` uses the `emcee` package to run the MCMC sampler, and attempt to find
+# ``demcmc`` uses the ``emcee``` package to run the MCMC sampler, and attempt to find
 # the best values of the DEM that match the line intensity observations.
 
 temp_bins = TempBins(10 ** np.arange(5.6, 6.8, 0.1) * u.K)
@@ -99,7 +103,7 @@ dem_result = predict_dem_emcee(lines, temp_bins, nwalkers=50, nsteps=100)
 print(dem_result)
 
 ######################################################################################
-# The `DEMResult` class has several useful properties. One of those is ``.samples``,
+# The `DEMOutput` class has several useful properties. One of those is ``.samples``,
 # which returns the samples of the DEM values at the final step of each MCMC walker.
 print(dem_result.samples.shape)
 print(dem_result.samples)

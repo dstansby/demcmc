@@ -24,7 +24,6 @@ docs = [
     "numpydoc",
     "pydata-sphinx-theme",
     "sphinx",
-    "sphinx-automodapi",
     "sphinx_gallery",
 ]
 tests = [

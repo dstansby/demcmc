@@ -1,10 +1,27 @@
 API Reference
 =============
 
-.. automodapi:: demcmc.dem
+This page lists the various classes and functions that ``demcmc`` provides.
 
-.. automodapi:: demcmc.emission
+.. contents:: Contents
+    :depth: 2
 
-.. automodapi:: demcmc.mcmc
+Input
+-----
+.. autoclass:: demcmc.TempBins
 
-.. automodapi:: demcmc.io
+.. autofunction:: demcmc.load_cont_funcs
+
+.. autoclass:: demcmc.ContFuncDiscrete
+
+.. autoclass:: demcmc.EmissionLine
+
+Running
+-------
+.. autofunction:: demcmc.predict_dem_emcee
+
+Output
+------
+.. autoclass:: demcmc.DEMOutput
+
+.. autofunction:: demcmc.plot_emission_loci
