@@ -24,7 +24,6 @@ docs = [
     "numpydoc",
     "pydata-sphinx-theme",
     "sphinx",
-    "sphinx-automodapi",
     "sphinx_gallery",
 ]
 tests = [
@@ -34,3 +33,6 @@ tests = [
 
 [tool.codespell]
 skip = '.git'
+
+[tool.isort]
+profile = "black"
