@@ -133,12 +133,12 @@ class ContFuncDiscrete(ContFunc):
 
     Parameters
     ----------
-    name : str
-        Name for the contribution function.
     temps : u.Quantity
         Temperature values of samples.
     values : u.Quantity
         Contribution function values.
+    name : str
+        Name for the contribution function.
     """
 
     def __init__(
