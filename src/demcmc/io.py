@@ -34,6 +34,7 @@ def load_cont_funcs(path: Path) -> dict[str, ContFuncDiscrete]:
         cont_funcs[line] = ContFuncDiscrete(
             temps=temps * u.K,
             values=da.loc[line, :].values * u.cm**5 / u.K,
+            name=line,
         )
 
     return cont_funcs
