@@ -197,10 +197,10 @@ class DEMOutput:
 
         Parameters
         ----------
-        ax : ~matplotlib.axes.Axes
+        ax : matplotlib.axes.Axes
             Axes to plot the samples on.
         **kwargs : dict
-            Keyword arguments are passed to `~matplotlib.axes.Axes.stairs`.
+            Keyword arguments are passed to :meth:`~matplotlib.axes.Axes.stairs`.
         """
         kwargs.setdefault("color", "k")
         kwargs.setdefault("alpha", 0.1)
