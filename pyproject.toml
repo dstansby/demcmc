@@ -33,3 +33,6 @@ tests = [
 
 [tool.codespell]
 skip = '.git'
+
+[tool.isort]
+profile = "black"
