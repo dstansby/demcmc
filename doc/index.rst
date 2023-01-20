@@ -9,7 +9,7 @@ The inversion is carried out using Markov chain Monte carlo (MCMC) methods, with
 
 ``demcmc`` does **not** make opinionated choices on *how* to run the the MCMC algorithm.
 Users are forced to choose the number of MCMC steps and walkers, and are given the outputs needed to evaluate whether their choices are appropriate.
-Before using this package it is highly recommneded to read the `emcee paper <https://doi.org/10.48550/arXiv.1202.3665>`__ to understand how the sampling works, and what to choose for the MCMC parametes.
+Before using this package it is highly recommended to read the `emcee paper <https://doi.org/10.48550/arXiv.1202.3665>`__ to understand how the sampling works, and what to choose for the MCMC parameters.
 
 
 
