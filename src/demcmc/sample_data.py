@@ -2,6 +2,7 @@
 Load sample data.
 """
 from pathlib import Path
+from typing import Tuple
 
 import pooch
 
@@ -15,7 +16,7 @@ REGISTRY = pooch.create(
 )
 
 
-def fetch_sample_data() -> tuple[Path, Path]:
+def fetch_sample_data() -> Tuple[Path, Path]:
     return REGISTRY.fetch("sample_intensity_values.nc"), REGISTRY.fetch(
         "sample_cont_func.nc"
     )

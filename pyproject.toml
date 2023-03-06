@@ -27,6 +27,7 @@ dependencies = [
     "netCDF4",
     "numpy",
     "pooch",
+    "typing_extensions; python_version == '3.8'",
     "xarray",
 ]
 dynamic = ["version"]

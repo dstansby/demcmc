@@ -1,7 +1,7 @@
 """
 Functions for carrying out MCMC estimation of DEMs.
 """
-from typing import Sequence
+from typing import List, Sequence, Tuple
 
 import emcee
 import numpy as np
@@ -33,7 +33,7 @@ def _log_prob_line(
 
 
 def _log_prob_lines(
-    lines: list[EmissionLine],
+    lines: List[EmissionLine],
     temp_bins: TempBins,
     dem_guess: np.ndarray,
 ) -> float:
@@ -54,7 +54,7 @@ def _log_prob_single_variation(
     idx_varied: int,
     dem_guess: np.ndarray,
     temp_bins: TempBins,
-    lines: list[EmissionLine],
+    lines: List[EmissionLine],
 ) -> float:
     """
     log probability of a given set of DEM values, varying one of them.
@@ -81,7 +81,7 @@ def _log_prob_single_variation(
 def _log_prob(
     dem_guess: np.ndarray,
     temp_bins: TempBins,
-    lines: list[EmissionLine],
+    lines: List[EmissionLine],
 ) -> float:
     """
     log probability of a given set of DEM values, varying one of them.
@@ -162,7 +162,7 @@ def _vary_values_independently(
     dem_guess: np.ndarray,
     *,
     nsteps: int,
-) -> tuple[np.ndarray, list[emcee.EnsembleSampler]]:
+) -> Tuple[np.ndarray, List[emcee.EnsembleSampler]]:
     ndim = 1
     nwalkers = 3
     n_dem = len(temp_bins)
