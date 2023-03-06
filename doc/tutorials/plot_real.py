@@ -53,10 +53,11 @@ ax.set_xlabel("Observed intensity")
 # provides functionality to load these from the saved netCDF file.
 
 cont_funcs = load_cont_funcs(cont_func_path)
-print(cont_funcs)
+for line in cont_funcs:
+    print(f"{line}: {cont_funcs[line]}")
 
 ######################################################################################
-# ``cont_funcs``` is a dictionary that maps the emission line to a contribution function
+# ``cont_funcs`` is a dictionary that maps the emission line to a contribution function
 # object. This object stores a pre-computed contribution function at a range of
 # discrete temperature values. Lets do a visualisation of all the contribution
 # functions:
