@@ -1,13 +1,25 @@
-[build-system]
-requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools_scm]
-
-
 [project]
 name = "demcmc"
-version = "0.0.1"
+authors = [
+  { name="David Stansby", email="d.stansby@ucl.ac.uk" },
+]
+description = "Differential Emission Measure calculations using Monte Carlo methods."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Astronomy",
+    "Topic :: Scientific/Engineering :: Physics"
+]
 dependencies = [
     "astropy",
     "emcee",
@@ -17,6 +29,13 @@ dependencies = [
     "pooch",
     "xarray",
 ]
+dynamic = ["version"]
+
+[project.urls]
+"Homepage" = "https://demcmc.readthedocs.io"
+"Bug Tracker" = "https://github.com/dstansby/demcmc/issues"
+Documentation = "https://demcmc.readthedocs.io"
+repository = "https://github.com/dstansby/demcmc"
 
 [project.optional-dependencies]
 docs = [
@@ -30,6 +49,12 @@ tests = [
     "pytest",
     "pytest-cov"
 ]
+
+[build-system]
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
 
 [tool.codespell]
 skip = '.git'
