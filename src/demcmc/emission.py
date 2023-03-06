@@ -210,7 +210,8 @@ class ContFuncDiscrete(ContFunc):
                 f"The following bin edges in temp_bins are missing from the contribution function temperature coordinates: {missing_ts}"
             )
 
-    @functools.cache
+    # Can change to just .cache() when Python 3.8 support dropped
+    @functools.lru_cache(maxsize=None)
     def _binned_arr(self, temp_bins: TempBins) -> np.ndarray:
         self._check_bin_edges(temp_bins)
 
@@ -227,7 +228,8 @@ class ContFuncDiscrete(ContFunc):
         means = df.groupby("Groups").mean()["values"].values
         return means
 
-    @functools.cache
+    # Can change to just .cache() when Python 3.8 support dropped
+    @functools.lru_cache(maxsize=None)
     def binned(self, temp_bins: TempBins) -> u.Quantity[u.cm**5 / u.K]:
         """
         Get contribution function.
