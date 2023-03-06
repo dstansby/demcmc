@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Dict
 
 import astropy.units as u
 import xarray as xr
@@ -8,7 +9,7 @@ from demcmc.emission import ContFuncDiscrete
 __all__ = ["load_cont_funcs"]
 
 
-def load_cont_funcs(path: Path) -> dict[str, ContFuncDiscrete]:
+def load_cont_funcs(path: Path) -> Dict[str, ContFuncDiscrete]:
     """
     Load a set of contribution functions from a netCDF file.
 

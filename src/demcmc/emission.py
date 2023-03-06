@@ -4,7 +4,7 @@ Structures for storing and working with emission lines.
 import functools
 from abc import ABC, abstractmethod, abstractproperty
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 import astropy.units as u
 import numpy as np
@@ -291,7 +291,7 @@ class EmissionLine:
         return np.sum(cont_func * dem_values * temp_bins._bin_widths_arr)
 
 
-def plot_emission_loci(lines: list[EmissionLine], ax: Axes, **kwargs: Any) -> None:
+def plot_emission_loci(lines: List[EmissionLine], ax: Axes, **kwargs: Any) -> None:
     """
     Plot emission loci for a set of observed emission lines.
 
