@@ -1,8 +1,6 @@
 demcmc follows the SunPy code of conduct, shown below.
 
-Code of Conduct
-===============
-
+# Code of Conduct
 The SunPy community is made up of members from around the globe with a diverse set of skills, personalities, and experiences.
 It is through these differences that our community experiences success and continued growth.
 We expect everyone in our community to follow these guidelines when interacting with others both inside and outside of our community.
@@ -10,17 +8,13 @@ Our goal is to keep ours a positive, inclusive, successful, and growing communit
 
 A member of SunPy is:
 
-Open
-----
-
+## Open
 Members of the community are open to collaboration, whether on patches, reporting issues, asking for help or otherwise.
 We welcome those interested in joining the community, and realise that including people with a variety of opinions and backgrounds will only serve to enrich our community.
 
 We are accepting of all who wish to take part in our activities, fostering an environment where anyone can participate and everyone can make a difference, ensuring that all participants are heard and feel confident that they can freely express their opinions.
 
-Considerate
------------
-
+## Considerate
 Members of the community are considerate of their peers -- other developers, users, etc.
 We are thoughtful when addressing the efforts of others, keeping in mind that often the labour was completed simply for the good of the community.
 We are attentive in our communications, whether in person or online, and we're tactful when approaching differing views.
@@ -28,9 +22,7 @@ We are attentive in our communications, whether in person or online, and we're t
 We recognize the work made by everyone and ensure the proper acknowledgement/citation of original authors at all times.
 As authors, we pledge to be explicit about how we want our own work to be cited or acknowledged.
 
-Respectful
-----------
-
+## Respectful
 Members of the community are respectful.
 We are respectful of others, their positions, their skills, their commitments, and their efforts.
 We are respectful of the volunteer and professional efforts within the community.
@@ -50,8 +42,6 @@ Parts of this code of conduct have been adapted from the [astropy](http://www.as
 
 ------------------------------------------------------------------------
 
-License
--------
-
+### License
 The SunPy Community Code of Conduct is licensed under a Creative Commons Attribution 4.0 International License.
 We encourage other communities related to ours to use or adapt this code as they see fit.
