@@ -16,6 +16,7 @@ Before using this package it is highly recommended to read the `emcee paper <htt
 .. toctree::
    :maxdepth: 1
 
+   installing
    _auto_examples/plot_real
    api/index
    explanation/dem_theory
