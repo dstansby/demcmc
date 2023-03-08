@@ -260,11 +260,14 @@ class EmissionLine:
         Observed intensity.
     sigma_intensity_obs : float
         Uncertainty in observed intensity.
+    name : str
+        Emission line name.
     """
 
     cont_func: ContFunc
     intensity_obs: Optional[float] = None
     sigma_intensity_obs: Optional[float] = None
+    name: Optional[str] = None
 
     def I_pred(self, dem: BinnedDEM) -> u.Quantity:
         """
