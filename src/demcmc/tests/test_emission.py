@@ -1,7 +1,7 @@
 import astropy.units as u
 import pytest
 
-from demcmc.dem import TempBins
+from demcmc import EmissionLine, TempBins
 from demcmc.emission import ContFuncDiscrete
 
 
@@ -24,3 +24,8 @@ class TestContFuncDiscrete:
     def test_binned(self, cont_func):
         tbins = TempBins([1, 3, 5] * u.MK)
         assert u.allclose(cont_func.binned(tbins), [0.3, 0.6] * u.cm**5 / u.K)
+
+
+def test_emission_line(cont_func):
+    line = EmissionLine(cont_func, name="my_line")
+    assert line.name == "my_line"
