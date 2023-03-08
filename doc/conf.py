@@ -44,9 +44,6 @@ sphinx_gallery_conf = {
 numpydoc_show_class_members = False
 numpydoc_xref_param_type = True
 
-automodapi_toctreedirnm = "_api"
-automodapi_inheritance_diagram = False
-
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "astropy": ("https://docs.astropy.org/en/stable/", None),
@@ -59,4 +56,8 @@ numpydoc_validation_checks = {
     "SA01",  # Allow omitting See Also section
     "EX01",  # Allow omitting Examples section
     "ES01",  # Allow omitting extended summary section
+}
+
+autodoc_default_options = {
+    "members": True,
 }
