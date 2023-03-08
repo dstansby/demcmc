@@ -24,4 +24,6 @@ Output
 ------
 .. autoclass:: demcmc.DEMOutput
 
+.. autoclass:: demcmc.emission.BinnedDEM
+
 .. autofunction:: demcmc.plot_emission_loci
