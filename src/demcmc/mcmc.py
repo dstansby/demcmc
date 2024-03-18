@@ -1,6 +1,7 @@
 """
 Functions for carrying out MCMC estimation of DEMs.
 """
+
 from typing import List, Sequence, Tuple
 
 import emcee

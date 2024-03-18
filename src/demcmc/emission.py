@@ -1,6 +1,7 @@
 """
 Structures for storing and working with emission lines.
 """
+
 import functools
 from abc import ABC, abstractmethod, abstractproperty
 from dataclasses import dataclass

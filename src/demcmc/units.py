@@ -1,6 +1,7 @@
 """
 Definition of global units used throughout demcmc.
 """
+
 import astropy.units as u
 
 u_temp = u.K
