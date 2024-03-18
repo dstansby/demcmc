@@ -4,6 +4,7 @@ Calculating a DEM from synthetic data
 This page contains a tutorial, stepping the user through estimating a DEM.
 We don't use any real data here, but instead a series of fake lines that have Gaussian contribution functions.
 """
+
 ##################################################################
 # Start by importing the required modules
 import astropy.units as u
